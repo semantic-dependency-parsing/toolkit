@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.Reader;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -78,11 +79,15 @@ public class ParagraphReader extends LineNumberReader {
         if (line == null) {
             return null;
         } else {
-            List<String> lines = new LinkedList<String>();
-            do {
-                lines.add(line);
-            } while ((line = super.readLine()) != null && !line.isEmpty());
-            return lines;
+            if (line.isEmpty()) {
+                return Collections.<String>emptyList();
+            } else {
+                List<String> lines = new LinkedList<String>();
+                do {
+                    lines.add(line);
+                } while ((line = super.readLine()) != null && !line.isEmpty());
+                return lines;
+            }
         }
     }
 }
