@@ -35,7 +35,7 @@ public class GraphReader extends ParagraphReader {
         if (lines == null) {
             return null;
         } else {
-            assert lines.size() > 2;
+//            assert lines.size() >= 2;
             assert lines.get(0).matches("#2[0-9]{7}$");
 
             Graph graph = new Graph(lines.get(0));
@@ -79,6 +79,10 @@ public class GraphReader extends ParagraphReader {
                 }
 
                 id++;
+            }
+
+            for (Node node : graph.getNodes()) {
+                assert !node.isPred || node.hasOutgoingEdges();
             }
 
             return graph;
