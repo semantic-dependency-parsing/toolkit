@@ -22,6 +22,14 @@ public class GraphAnalyzer {
      * The postorder timestamps of each node.
      */
     private final int[] leave;
+    /**
+     * The number of runs.
+     */
+    private int nRuns;
+    /**
+     * The index of the run during which this node was (first) visited.
+     */
+    private final int[] run;
 
     /**
      * Construct a new analyzer for the specified graph.
@@ -32,6 +40,8 @@ public class GraphAnalyzer {
         this.graph = graph;
 
         int nNodes = graph.getNNodes();
+
+        this.run = new int[nNodes];
 
         this.enter = new int[nNodes];
         this.leave = new int[nNodes];
@@ -46,6 +56,7 @@ public class GraphAnalyzer {
         for (Node node : graph.getNodes()) {
             if (enter[node.id] == 0) {
                 computeTimestamps(node, timer);
+                nRuns++;
             }
         }
     }
@@ -58,6 +69,7 @@ public class GraphAnalyzer {
      * @param timer the global timer
      */
     private void computeTimestamps(Node node, Timer timer) {
+        run[node.id] = nRuns;
         enter[node.id] = timer.tick();
         for (Edge outgoingEdge : node.getOutgoingEdges()) {
             // Only visit nodes that have not been visited before.
@@ -206,5 +218,20 @@ public class GraphAnalyzer {
 
     private static boolean overlap(int min1, int max1, int min2, int max2) {
         return min1 < min2 && min2 < max1 && max1 < max2 || min2 < min1 && min1 < max2 && max2 < max1;
+    }
+
+    public int getNComponents() {
+        int[] component = new int[nRuns];
+        for (int i = 0; i < nRuns; i++) {
+            component[i] = i;
+        }
+        int nComponents = nRuns;
+        for (Edge edge : graph.getEdges()) {
+            if (component[run[edge.source]] != component[run[edge.target]]) {
+                component[run[edge.source]] = component[run[edge.target]];
+                nComponents--;
+            }
+        }
+        return nComponents;
     }
 }
