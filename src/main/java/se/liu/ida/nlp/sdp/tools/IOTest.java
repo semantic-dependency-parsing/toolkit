@@ -8,6 +8,7 @@ import se.liu.ida.nlp.sdp.io.GraphReader;
 import se.liu.ida.nlp.sdp.io.GraphWriter;
 
 /**
+ * Test the graph I/O.
  *
  * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
  */

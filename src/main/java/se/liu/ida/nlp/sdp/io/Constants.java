@@ -18,8 +18,16 @@ public class Constants {
      * The string that represents undefined values.
      */
     public static final String UNDEFINED = "_";
-
-    public static final String WALL_FORM = "$$";
-    public static final String WALL_LEMMA = "$$";
-    public static final String WALL_POS = "$$";
+    /**
+     * The word form associated with the wall token.
+     */
+    public static final String WALL_FORM = "$$_FORM";
+    /**
+     * The lemma associated with the wall token.
+     */
+    public static final String WALL_LEMMA = "$$_LEMMA";
+    /**
+     * The part-of-speech tag associated with the wall token.
+     */
+    public static final String WALL_POS = "$$_POS";
 }

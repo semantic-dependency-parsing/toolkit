@@ -13,6 +13,7 @@ import se.liu.ida.nlp.sdp.graph.Graph;
 import se.liu.ida.nlp.sdp.graph.Node;
 
 /**
+ * Write semantic dependency graphs to a file.
  *
  * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
  */
@@ -23,18 +24,45 @@ public class GraphWriter {
      */
     private final PrintWriter writer;
 
+    /**
+     * Create a graph writer that writes to the specified PrintWriter.
+     *
+     * @param writer the PrintWriter to be written to
+     */
     public GraphWriter(PrintWriter writer) {
         this.writer = writer;
     }
 
+    /**
+     * Create a graph writer that writes to the specified file.
+     *
+     * @param file the file to write to
+     * @throws IOException if the specified file does not exist, is a directory
+     * rather than a regular file, or for some other reason cannot be opened for
+     * writing
+     */
     public GraphWriter(File file) throws IOException {
         this(new PrintWriter(new BufferedWriter(new FileWriter(file))));
     }
 
+    /**
+     * Create a graph writer that writes to the specified file.
+     *
+     * @param fileName the name of the file to read from
+     * @throws IOException if the specified file does not exist, is a directory
+     * rather than a regular file, or for some other reason cannot be opened for
+     * writing
+     */
     public GraphWriter(String fileName) throws IOException {
         this(new File(fileName));
     }
 
+    /**
+     * Writes a single graph.
+     *
+     * @param graph the graph to be written
+     * @throws IOException if an I/O error occurs
+     */
     public void writeGraph(Graph graph) throws IOException {
         int nNodes = graph.getNNodes();
 
@@ -42,7 +70,7 @@ public class GraphWriter {
         for (Edge edge : graph.getEdges()) {
             labels[edge.source][edge.target] = edge.label;
         }
-        
+
         writer.println(graph.id);
 
         for (Node node : graph.getNodes()) {
@@ -60,8 +88,8 @@ public class GraphWriter {
                 // Field 4: POS
                 sb.append(node.pos);
                 sb.append(Constants.COLUMN_SEPARATOR);
-                // Field 5: ROOT
-                sb.append(node.isRoot ? "+" : "-");
+                // Field 5: TOP
+                sb.append(node.isTop ? "+" : "-");
                 sb.append(Constants.COLUMN_SEPARATOR);
                 // Field 6: PRED
                 sb.append(node.isPred ? "+" : "-");
@@ -85,6 +113,11 @@ public class GraphWriter {
         writer.println();
     }
 
+    /**
+     * Closes the stream and releases any system resources associated with it.
+     *
+     * @throws IOException if an I/O error occurs
+     */
     public void close() throws IOException {
         writer.close();
     }

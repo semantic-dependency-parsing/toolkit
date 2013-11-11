@@ -4,11 +4,11 @@
 package se.liu.ida.nlp.sdp.graph;
 
 /**
- * Test for several graph-theoretic properties.
+ * Inspect graph-theoretic properties.
  *
  * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
  */
-public class GraphAnalyzer {
+public class GraphInspector {
 
     /**
      * The analyzed graph.
@@ -32,11 +32,11 @@ public class GraphAnalyzer {
     private final int[] run;
 
     /**
-     * Construct a new analyzer for the specified graph.
+     * Construct a new inspector for the specified graph.
      *
      * @param graph the graph to be analyzed
      */
-    public GraphAnalyzer(Graph graph) {
+    public GraphInspector(Graph graph) {
         this.graph = graph;
 
         int nNodes = graph.getNNodes();
@@ -49,7 +49,7 @@ public class GraphAnalyzer {
     }
 
     /**
-     * Computes the preorder and postorder timestamps for the analyzed graph.
+     * Computes the preorder and postorder timestamps for the inspected graph.
      */
     private void computeTimestamps() {
         Timer timer = new Timer();
@@ -101,9 +101,9 @@ public class GraphAnalyzer {
     }
 
     /**
-     * Tests whether the analyzed graph contains a cycle.
+     * Tests whether the inspected graph contains a cycle.
      *
-     * @return {@code true} if and only if the analyzed graph contains a cycle
+     * @return {@code true} if and only if the inspected graph contains a cycle
      */
     public boolean isCyclic() {
         for (Edge edge : graph.getEdges()) {
@@ -116,9 +116,9 @@ public class GraphAnalyzer {
     }
 
     /**
-     * Computes the maximal indegree of the nodes in the analyzed graph.
+     * Computes the maximal indegree of the nodes in the inspected graph.
      *
-     * @return the maximal indegree of the nodes in the analyzed graph
+     * @return the maximal indegree of the nodes in the inspected graph
      */
     public int getMaximalIndegree() {
         int max = 0;
@@ -129,9 +129,9 @@ public class GraphAnalyzer {
     }
 
     /**
-     * Computes the maximal outdegree of the nodes in the analyzed graph.
+     * Computes the maximal outdegree of the nodes in the inspected graph.
      *
-     * @return the maximal outdegree of the nodes in the analyzed graph
+     * @return the maximal outdegree of the nodes in the inspected graph
      */
     public int getMaximalOutdegree() {
         int max = 0;
@@ -142,10 +142,10 @@ public class GraphAnalyzer {
     }
 
     /**
-     * Returns the number of root nodes in the analyzed graph. A <em>root
+     * Returns the number of root nodes in the inspected graph. A <em>root
      * node</em> is a node without incoming edges.
      *
-     * @return the number of root nodes in the analyzed graph
+     * @return the number of root nodes in the inspected graph
      */
     public int getNRootNodes() {
         int nRootNodes = 0;
@@ -156,10 +156,10 @@ public class GraphAnalyzer {
     }
 
     /**
-     * Returns the number of leaf nodes in the analyzed graph. A <em>leaf
+     * Returns the number of leaf nodes in the inspected graph. A <em>leaf
      * node</em> is a node without outgoing edges.
      *
-     * @return the number of leaf nodes in the analyzed graph
+     * @return the number of leaf nodes in the inspected graph
      */
     public int getNLeafNodes() {
         int nLeafNodes = 0;
@@ -170,25 +170,31 @@ public class GraphAnalyzer {
     }
 
     /**
-     * Tests whether the analyzed graph is a forest. A forest is an acyclic
+     * Tests whether the inspected graph is a forest. A forest is an acyclic
      * graph in which every node has at most one incoming edge.
      *
-     * @return {@code true} if and only if the analyzed graph is a forest
+     * @return {@code true} if and only if the inspected graph is a forest
      */
     public boolean isForest() {
         return !isCyclic() && getMaximalIndegree() <= 1;
     }
 
     /**
-     * Tests whether the analyzed graph is a tree. A tree is a forest with
+     * Tests whether the inspected graph is a tree. A tree is a forest with
      * exactly one root node.
      *
-     * @return {@code true} if and only if the analyzed graph is a tree
+     * @return {@code true} if and only if the inspected graph is a tree
      */
     public boolean isTree() {
         return isForest() && getNRootNodes() == 1;
     }
 
+    /**
+     * Tests whether the inspected graph is projected. A graph is projective if
+     * there are no overlapping edges, and no edge covers some root node.
+     *
+     * @return {@code true} if and only if the inspected graph is projective
+     */
     public boolean isProjective() {
         int nNodes = graph.getNNodes();
         boolean[] hasIncomingEdge = new boolean[nNodes];
@@ -216,10 +222,24 @@ public class GraphAnalyzer {
         return true;
     }
 
+    /**
+     * Tests whether the specified edges overlap (cross).
+     *
+     * @param min1 the position of the left node of the first edge
+     * @param max1 the position of the right node of the first edge
+     * @param min2 the position of the left node of the second edge
+     * @param max2 the position of the right node of the second edge
+     * @return {@code true} if and only if the specified edges overlap
+     */
     private static boolean overlap(int min1, int max1, int min2, int max2) {
         return min1 < min2 && min2 < max1 && max1 < max2 || min2 < min1 && min1 < max2 && max2 < max1;
     }
 
+    /**
+     * Returns the number of weakly connected components of the inspected graph.
+     *
+     * @return The number of weakly connected components of the inspected graph
+     */
     public int getNComponents() {
         int[] component = new int[nRuns];
         for (int i = 0; i < nRuns; i++) {

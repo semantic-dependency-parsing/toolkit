@@ -14,19 +14,32 @@ import java.util.List;
  */
 public class Graph {
 
+    /**
+     * The list of nodes of this graph.
+     */
     private final List<Node> nodes;
+    /**
+     * The list of edges of this graph.
+     */
     private final List<Edge> edges;
-    //
+    /**
+     * The unique ID of this graph.
+     */
     public final String id;
 
+    /**
+     * Construct an empty graph.
+     * 
+     * @param id the unique ID of the new graph
+     */
     public Graph(String id) {
         this.id = id;
         this.nodes = new ArrayList<Node>();
         this.edges = new ArrayList<Edge>();
     }
 
-    public Node addNode(String form, String lemma, String pos, boolean isRoot, boolean isPred) {
-        Node node = new Node(nodes.size(), form, lemma, pos, isRoot, isPred);
+    public Node addNode(String form, String lemma, String pos, boolean isTop, boolean isPred) {
+        Node node = new Node(nodes.size(), form, lemma, pos, isTop, isPred);
         nodes.add(node);
         return node;
     }
@@ -70,7 +83,7 @@ public class Graph {
     public List<Node> getRoots() {
         List<Node> roots = new LinkedList<Node>();
         for (Node node : nodes) {
-            if (node.isRoot) {
+            if (node.isTop) {
                 roots.add(node);
             }
         }
