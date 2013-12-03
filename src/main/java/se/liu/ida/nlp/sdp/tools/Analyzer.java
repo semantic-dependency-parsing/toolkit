@@ -17,7 +17,7 @@ public class Analyzer {
 
     private int nGraphs;
     private int nNodes;
-    private double avgNRoots;
+    private double avgNTopNodes;
     private double avgNStructuralRoots;
     private double pcSemiConnected;
     private double pcReentrant;
@@ -31,7 +31,8 @@ public class Analyzer {
     public void update(Graph graph) {
         GraphInspector analyzer = new GraphInspector(graph);
 
-        int nRoots = 0;
+        int nTopNodes = 0;
+        int nEdgesFromTopNode = 0;
         int nStructuralRoots = 0;
         boolean isSemiConnected = true;
         boolean isReentrant = false;
@@ -44,7 +45,8 @@ public class Analyzer {
 
         for (Node node : graph.getNodes()) {
             if (node.isTop) {
-                nRoots++;
+                nTopNodes++;
+                nEdgesFromTopNode += node.getNOutgoingEdges();
             }
             if (!node.hasIncomingEdges()) {
                 nStructuralRoots++;
@@ -66,7 +68,6 @@ public class Analyzer {
             avgOutdegreeGlobal += node.getNOutgoingEdges();
         }
         if (analyzer.getNComponents() - nSingletons > 1) {
-            System.err.format("%s%n", graph.id);
             isSemiConnected = false;
         }
         avgIndegree /= (double) graph.getNNodes();
@@ -75,20 +76,31 @@ public class Analyzer {
         nGraphs++;
         nNodes += graph.getNNodes();
 
-        avgNRoots += nRoots;
-        avgNStructuralRoots += nRoots;
+        avgNTopNodes += nTopNodes;
+        avgNStructuralRoots += nTopNodes;
         pcSemiConnected += isSemiConnected ? 1.0 : 0.0;
         pcReentrant += isReentrant ? 1.0 : 0.0;
         pcCyclic += isCyclic ? 1.0 : 0.0;
         maxIndegreeGlobal = Math.max(maxIndegreeGlobal, maxIndegree);
         avgSingletons += nSingletons;
+
+        System.out.format("%s", graph.id);
+        // number of top nodes
+        System.out.format("\t%d", nTopNodes);
+        // number of outgoing arcs from top
+        System.out.format("\t%d", nEdgesFromTopNode);
+        // cyclic?
+        System.out.format("\t%s", analyzer.isCyclic() ? "+" : "-");
+        // semiconnected?
+        System.out.format("\t%s", isSemiConnected ? "+" : "-");
+        System.out.println();
     }
 
     public void finish() {
         avgIndegreeGlobal /= nNodes;
         avgOutdegreeGlobal /= nNodes;
         //
-        avgNRoots /= nGraphs;
+        avgNTopNodes /= nGraphs;
         avgNStructuralRoots /= nGraphs;
         pcSemiConnected /= nGraphs;
         pcReentrant /= nGraphs;
@@ -106,8 +118,6 @@ public class Analyzer {
             }
             reader.close();
             analyzer.finish();
-            System.out.format("%% semi-connected: %f%n", analyzer.pcSemiConnected);
-//            System.out.format("%% cyclic: %f%n", analyzer.pcCyclic);
         }
     }
 }
