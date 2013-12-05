@@ -1,7 +1,7 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package se.liu.ida.nlp.sdp.io;
+package sdp.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;

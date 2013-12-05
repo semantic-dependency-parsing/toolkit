@@ -1,16 +1,16 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package se.liu.ida.nlp.sdp.io;
+package sdp.io;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import se.liu.ida.nlp.sdp.graph.Edge;
-import se.liu.ida.nlp.sdp.graph.Graph;
-import se.liu.ida.nlp.sdp.graph.Node;
+import sdp.graph.Edge;
+import sdp.graph.Graph;
+import sdp.graph.Node;
 
 /**
  * Write semantic dependency graphs to a file.

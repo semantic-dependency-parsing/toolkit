@@ -3,6 +3,6 @@
 set -e
 
 root=$(cd "$(dirname "$0")"; pwd)
-pkg=se.liu.ida.nlp.sdp.
+pkg=sdp.tools.
 
-java -cp $root/target/sdp-1.0-SNAPSHOT.jar $pkg$@
+java -cp $root/dist/sdp.jar $pkg$@

@@ -1,1 +1,4 @@
 /target/
+/nbproject/
+/build/
+/dist/

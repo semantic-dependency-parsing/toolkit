@@ -1,7 +1,7 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package se.liu.ida.nlp.sdp.io;
+package sdp.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import se.liu.ida.nlp.sdp.graph.Graph;
-import se.liu.ida.nlp.sdp.graph.Node;
+import sdp.graph.Graph;
+import sdp.graph.Node;
 
 /**
  * Read semantic dependency graphs from a file. This reader implements the

@@ -1,11 +1,11 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package se.liu.ida.nlp.sdp.tools;
+package sdp.tools;
 
-import se.liu.ida.nlp.sdp.graph.Graph;
-import se.liu.ida.nlp.sdp.io.GraphReader;
-import se.liu.ida.nlp.sdp.io.GraphWriter;
+import sdp.graph.Graph;
+import sdp.io.GraphReader;
+import sdp.io.GraphWriter;
 
 /**
  * Test the graph I/O.

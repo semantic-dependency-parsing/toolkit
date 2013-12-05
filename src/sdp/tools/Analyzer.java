@@ -1,12 +1,12 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package se.liu.ida.nlp.sdp.tools;
+package sdp.tools;
 
-import se.liu.ida.nlp.sdp.graph.Graph;
-import se.liu.ida.nlp.sdp.graph.GraphInspector;
-import se.liu.ida.nlp.sdp.graph.Node;
-import se.liu.ida.nlp.sdp.io.GraphReader;
+import sdp.graph.Graph;
+import sdp.graph.GraphInspector;
+import sdp.graph.Node;
+import sdp.io.GraphReader;
 
 /**
  * Print statistics about a collection of graphs.
@@ -117,7 +117,11 @@ public class Analyzer {
                 analyzer.update(graph);
             }
             reader.close();
-            analyzer.finish();
         }
+        analyzer.finish();
+        System.err.format("number of graphs: %d%n", analyzer.nGraphs);
+        System.err.format("average number of top nodes per graph: %f%n", analyzer.avgNTopNodes);
+        System.err.format("percentage of cyclic graphs: %f%n", analyzer.pcCyclic);
+        System.err.format("percentage of semi-connected graphs: %f%n", analyzer.pcSemiConnected);
     }
 }

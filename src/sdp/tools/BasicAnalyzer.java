@@ -1,11 +1,11 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package se.liu.ida.nlp.sdp.tools;
+package sdp.tools;
 
-import se.liu.ida.nlp.sdp.graph.Graph;
-import se.liu.ida.nlp.sdp.graph.GraphInspector;
-import se.liu.ida.nlp.sdp.io.GraphReader;
+import sdp.graph.Graph;
+import sdp.graph.GraphInspector;
+import sdp.io.GraphReader;
 
 /**
  * Print some basic statistics about a collection of graphs.

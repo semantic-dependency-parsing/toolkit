@@ -1,15 +1,15 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package se.liu.ida.nlp.sdp.tools;
+package sdp.tools;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import se.liu.ida.nlp.sdp.graph.Edge;
-import se.liu.ida.nlp.sdp.graph.Graph;
-import se.liu.ida.nlp.sdp.graph.Node;
-import se.liu.ida.nlp.sdp.io.GraphReader;
+import sdp.graph.Edge;
+import sdp.graph.Graph;
+import sdp.graph.Node;
+import sdp.io.GraphReader;
 
 /**
  *
@@ -27,8 +27,8 @@ public class Evaluator {
     private int nEdgesInCommonUnlabeled;
 
     public Evaluator() {
-        this.excludedGraphs = Collections.EMPTY_SET;
-        this.excludedLabels = Collections.EMPTY_SET;
+        this.excludedGraphs = Collections.<Integer>emptySet();
+        this.excludedLabels = Collections.<String>emptySet();
     }
 
     public Evaluator(Set<Integer> excludedGraphs, Set<String> excludedLabels) {
@@ -131,9 +131,9 @@ public class Evaluator {
     }
 
     public static void main(String[] args) throws Exception {
-        Set<String> excludedLabels = new HashSet<String>();
-//        excludedLabels.add(PSEUDO);
-        Evaluator evaluator = new Evaluator(Collections.EMPTY_SET, excludedLabels);
+        Set<String> excludedLabels = new HashSet<>();
+        excludedLabels.add(PSEUDO);
+        Evaluator evaluator = new Evaluator(Collections.<Integer>emptySet(), excludedLabels);
         GraphReader referenceReader = new GraphReader(args[0]);
         GraphReader candidateReader = new GraphReader(args[1]);
         Graph reference;
