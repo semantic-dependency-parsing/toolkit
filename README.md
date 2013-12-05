@@ -14,7 +14,7 @@ After checking out the project from the repository, you should be able to build 
 
 ```
 $ ant
-'''
+```
 
 This will create a file ``dist/sdp.jar'' with the compiled classes. The jar can then be added to your classpath, whereby you will be able to use the provided classes in your own project. To see what is there, consult the Javadoc documentation in ``dist/javadoc''.
 
@@ -24,4 +24,4 @@ Some of the tools implemented in the project can be called from the command line
 
 ```
 $ sh run.sh Analyzer train/dm.sdp
-'''
+```
