@@ -131,7 +131,7 @@ public class Evaluator {
     }
 
     public static void main(String[] args) throws Exception {
-        Set<String> excludedLabels = new HashSet<>();
+        Set<String> excludedLabels = new HashSet<String>();
         excludedLabels.add(PSEUDO);
         Evaluator evaluator = new Evaluator(Collections.<Integer>emptySet(), excludedLabels);
         GraphReader referenceReader = new GraphReader(args[0]);
