@@ -107,8 +107,8 @@ public class GraphInspector {
      */
     public boolean isCyclic() {
         for (Edge edge : graph.getEdges()) {
-            // Check whether the current edge is a back edge.
-            if (enter[edge.target] < enter[edge.source] && leave[edge.source] < leave[edge.target]) {
+            // Check whether the current edge is a self-loop or a back edge.
+            if (edge.target == edge.source || enter[edge.target] < enter[edge.source] && leave[edge.source] < leave[edge.target]) {
                 return true;
             }
         }
