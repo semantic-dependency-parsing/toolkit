@@ -4,7 +4,7 @@
 package sdp.tools;
 
 import sdp.graph.Graph;
-import sdp.graph.GraphInspector;
+import sdp.graph.InspectedGraph;
 import sdp.io.GraphReader;
 
 /**
@@ -27,7 +27,7 @@ public class BasicAnalyzer {
             int maxOutdegree = 0;
             Graph graph;
             while ((graph = reader.readGraph()) != null) {
-                GraphInspector analyzer = new GraphInspector(graph);
+                InspectedGraph analyzer = new InspectedGraph(graph);
                 nCyclic += analyzer.isCyclic() ? 1 : 0;
                 nForests += analyzer.isForest() ? 1 : 0;
                 nTrees += analyzer.isTree() ? 1 : 0;

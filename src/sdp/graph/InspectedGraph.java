@@ -8,7 +8,7 @@ package sdp.graph;
  *
  * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
  */
-public class GraphInspector {
+public class InspectedGraph {
 
     /**
      * The analyzed graph.
@@ -36,7 +36,7 @@ public class GraphInspector {
      *
      * @param graph the graph to be analyzed
      */
-    public GraphInspector(Graph graph) {
+    public InspectedGraph(Graph graph) {
         this.graph = graph;
 
         int nNodes = graph.getNNodes();

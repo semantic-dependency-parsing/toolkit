@@ -4,7 +4,7 @@
 package sdp.tools;
 
 import sdp.graph.Graph;
-import sdp.graph.GraphInspector;
+import sdp.graph.InspectedGraph;
 import sdp.graph.Node;
 import sdp.io.GraphReader;
 
@@ -29,14 +29,14 @@ public class Analyzer {
     private double avgSingletons;
 
     public void update(Graph graph) {
-        GraphInspector analyzer = new GraphInspector(graph);
+        InspectedGraph inspectedGraph = new InspectedGraph(graph);
 
         int nTopNodes = 0;
         int nEdgesFromTopNode = 0;
         int nStructuralRoots = 0;
-        boolean isSemiConnected = true;
         boolean isReentrant = false;
         boolean isCyclic = false;
+        boolean isSemiConnected = true;
         int maxIndegree = 0;
         double avgIndegree = 0.0;
         int maxOutdegree = 0;
@@ -54,9 +54,6 @@ public class Analyzer {
             if (node.getNIncomingEdges() >= 2) {
                 isReentrant = true;
             }
-            if (analyzer.isCyclic()) {
-                isCyclic = true;
-            }
             maxIndegree = Math.max(maxIndegree, node.getNIncomingEdges());
             avgIndegree += node.getNIncomingEdges();
             maxOutdegree = Math.max(maxOutdegree, node.getNOutgoingEdges());
@@ -67,7 +64,10 @@ public class Analyzer {
             avgIndegreeGlobal += node.getNIncomingEdges();
             avgOutdegreeGlobal += node.getNOutgoingEdges();
         }
-        if (analyzer.getNComponents() - nSingletons > 1) {
+        if (inspectedGraph.isCyclic()) {
+            isCyclic = true;
+        }
+        if (inspectedGraph.getNComponents() - nSingletons > 1) {
             isSemiConnected = false;
         }
         avgIndegree /= (double) graph.getNNodes();
@@ -90,7 +90,7 @@ public class Analyzer {
         // number of outgoing arcs from top
         System.out.format("\t%d", nEdgesFromTopNode);
         // cyclic?
-        System.out.format("\t%s", analyzer.isCyclic() ? "+" : "-");
+        System.out.format("\t%s", inspectedGraph.isCyclic() ? "+" : "-");
         // semiconnected?
         System.out.format("\t%s", isSemiConnected ? "+" : "-");
         System.out.println();
