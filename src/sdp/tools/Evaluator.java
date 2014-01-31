@@ -3,9 +3,6 @@
  */
 package sdp.tools;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import sdp.graph.Edge;
 import sdp.graph.Graph;
 import sdp.graph.Node;
@@ -18,83 +15,69 @@ import sdp.io.GraphReader;
 public class Evaluator {
 
     private static final String PSEUDO = "-PSEUDO-";
-    private final Set<Integer> excludedGraphs;
-    private final Set<String> excludedLabels;
-    private int nGraphs;
+    private final boolean excludeTopNodes;
     private int nEdgesReferences;
     private int nEdgesCandidates;
     private int nEdgesInCommon;
     private int nEdgesInCommonUnlabeled;
 
-    public Evaluator() {
-        this.excludedGraphs = Collections.<Integer>emptySet();
-        this.excludedLabels = Collections.<String>emptySet();
+    public Evaluator(boolean excludeTopNodes) {
+        this.excludeTopNodes = excludeTopNodes;
     }
 
-    public Evaluator(Set<Integer> excludedGraphs, Set<String> excludedLabels) {
-        this.excludedGraphs = excludedGraphs;
-        this.excludedLabels = excludedLabels;
+    public Evaluator() {
+        this(false);
     }
 
     public void update(Graph reference, Graph candidate) {
-        if (excludedGraphs.contains(new Integer(nGraphs))) {
-            System.err.format("Excluding graph #%d.%n", nGraphs);
+        assert reference.getNNodes() == candidate.getNNodes();
+        if (reference.getNNodes() != candidate.getNNodes()) {
+            System.err.format("Will not compare gold graph %s and system graph %s as they have different numbers of nodes.%n", reference.id, candidate.id);
         } else {
-            assert reference.getNNodes() == candidate.getNNodes();
-            if (reference.getNNodes() != candidate.getNNodes()) {
-                System.err.format("Skipping graph #%d.%n", nGraphs);
-            } else {
-                int nNodes = reference.getNNodes();
+            int nNodes = reference.getNNodes();
 
-                boolean[][] hasEdgeReference = new boolean[nNodes][nNodes];
-                String[][] labelsReference = new String[nNodes][nNodes];
-                for (Edge edge : reference.getEdges()) {
-                    if (!excludedLabels.contains(edge.label)) {
-                        nEdgesReferences++;
-                        int src = edge.source;
-                        int tgt = edge.target;
-                        hasEdgeReference[src][tgt] = true;
-                        labelsReference[src][tgt] = edge.label;
-                    }
+            boolean[][] hasEdgeReference = new boolean[nNodes][nNodes];
+            String[][] labelsReference = new String[nNodes][nNodes];
+            for (Edge edge : reference.getEdges()) {
+                nEdgesReferences++;
+                int src = edge.source;
+                int tgt = edge.target;
+                hasEdgeReference[src][tgt] = true;
+                labelsReference[src][tgt] = edge.label;
+            }
+            for (Node node : reference.getNodes()) {
+                if (node.isTop && !excludeTopNodes) {
+                    nEdgesReferences++;
+                    int src = 0;
+                    int tgt = node.id;
+                    hasEdgeReference[src][tgt] = true;
+                    labelsReference[src][tgt] = PSEUDO;
                 }
-                for (Node node : reference.getNodes()) {
-                    if (node.isTop && !excludedLabels.contains(PSEUDO)) {
-                        nEdgesReferences++;
-                        int src = 0;
-                        int tgt = node.id;
-                        hasEdgeReference[src][tgt] = true;
-                        labelsReference[src][tgt] = PSEUDO;
-                    }
-                }
+            }
 
-                for (Edge edge : candidate.getEdges()) {
-                    if (!excludedLabels.contains(edge.label)) {
-                        nEdgesCandidates++;
-                        int src = edge.source;
-                        int tgt = edge.target;
-                        if (hasEdgeReference[src][tgt]) {
-                            nEdgesInCommonUnlabeled++;
-                            if (edge.label.equals(labelsReference[src][tgt])) {
-                                nEdgesInCommon++;
-                            }
-                        }
+            for (Edge edge : candidate.getEdges()) {
+                nEdgesCandidates++;
+                int src = edge.source;
+                int tgt = edge.target;
+                if (hasEdgeReference[src][tgt]) {
+                    nEdgesInCommonUnlabeled++;
+                    if (edge.label.equals(labelsReference[src][tgt])) {
+                        nEdgesInCommon++;
                     }
                 }
-                for (Node node : candidate.getNodes()) {
-                    if (node.isTop && !excludedLabels.contains(PSEUDO)) {
-                        nEdgesCandidates++;
-                        int src = 0;
-                        int tgt = node.id;
-                        if (hasEdgeReference[src][tgt]) {
-                            nEdgesInCommonUnlabeled++;
-                            nEdgesInCommon++;
-                        }
+            }
+            for (Node node : candidate.getNodes()) {
+                if (node.isTop && !excludeTopNodes) {
+                    nEdgesCandidates++;
+                    int src = 0;
+                    int tgt = node.id;
+                    if (hasEdgeReference[src][tgt]) {
+                        nEdgesInCommonUnlabeled++;
+                        nEdgesInCommon++;
                     }
                 }
             }
         }
-
-        nGraphs++;
     }
 
     public double getPrecision() {
@@ -119,23 +102,15 @@ public class Evaluator {
         return (double) nEdgesInCommonUnlabeled / (double) nEdgesReferences;
     }
 
-    /**
-     * Computes the unlabeled F1 score.
-     *
-     * @return the unlabeled F1 score
-     */
     public double getUnlabeledF1() {
         double p = getUnlabeledPrecision();
         double r = getUnlabeledRecall();
         return 2.0 * p * r / (p + r);
     }
 
-    public static void main(String[] args) throws Exception {
-        Set<String> excludedLabels = new HashSet<String>();
-        excludedLabels.add(PSEUDO);
-        Evaluator evaluator = new Evaluator(Collections.<Integer>emptySet(), excludedLabels);
-        GraphReader referenceReader = new GraphReader(args[0]);
-        GraphReader candidateReader = new GraphReader(args[1]);
+    private static void evaluate(Evaluator evaluator, String referencesFile, String candidatesFile) throws Exception {
+        GraphReader referenceReader = new GraphReader(referencesFile);
+        GraphReader candidateReader = new GraphReader(candidatesFile);
         Graph reference;
         Graph candidate;
         while ((reference = referenceReader.readGraph()) != null) {
@@ -144,8 +119,22 @@ public class Evaluator {
         }
         referenceReader.close();
         candidateReader.close();
+        System.err.format("Number of edges in reference: %d%n", evaluator.nEdgesReferences);
+        System.err.format("Number of edges in candidates: %d%n", evaluator.nEdgesCandidates);
+        System.err.format("Number of edges in common, labeled: %d%n", evaluator.nEdgesInCommon);
+        System.err.format("Number of edges in common, unlabeled: %d%n", evaluator.nEdgesInCommonUnlabeled);
         System.err.format("P: %f%n", evaluator.getPrecision());
         System.err.format("R: %f%n", evaluator.getRecall());
         System.err.format("F: %f%n", evaluator.getF1());
+    }
+
+    public static void main(String[] args) throws Exception {
+        Evaluator evaluator1 = new Evaluator(false);
+        Evaluator evaluator2 = new Evaluator(true);
+        System.err.println("Scores including top nodes:");
+        evaluate(evaluator1, args[0], args[1]);
+        System.err.println();
+        System.err.println("Scores excluding top nodes:");
+        evaluate(evaluator2, args[0], args[1]);
     }
 }
