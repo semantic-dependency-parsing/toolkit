@@ -18,6 +18,8 @@ This will create a file `dist/sdp.jar` with the compiled classes. The jar can th
 
 ## Command-line tools
 
-Some of the tools implemented in the project can be called from the command line. For this there is a convenience shell script called `run.sh`, which you call with the name of the tool and any command-line arguments. Example:
+Some of the tools implemented in the project can be called from the command line. For this there is a convenience shell script called `run.sh`, which you call with the name of the tool and any command-line arguments. The most revelant example is the evaluator (scorer) tool:
 
-	$ sh run.sh Analyzer train/dm.sdp
+	$ sh run.sh Evaluator GOLD SYSTEM
+
+This will evaluate the parser output in the file `SYSTEM` based on the gold-standard analyses in the file `GOLD`.
