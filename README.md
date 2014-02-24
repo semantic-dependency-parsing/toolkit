@@ -22,7 +22,7 @@ Some of the tools implemented in the project can be called from the command line
 
 	$ sh run.sh Evaluator gold.sdp system.sdp
 
-This will evaluate the parser output in the file `system.sdp` based on the gold-standard analyses in the file `gold.sdp`. The central figures are LP (labeled precision), LR (labeled recall), and LF (labeled F1), as defined on the [http://alt.qcri.org/semeval2014/task8/index.php?id=evaluation](Evaluation page).
+This will evaluate the parser output in the file `system.sdp` based on the gold-standard analyses in the file `gold.sdp`. The central figures are LP (labeled precision), LR (labeled recall), and LF (labeled F1), as defined on the [Evaluation page](http://alt.qcri.org/semeval2014/task8/index.php?id=evaluation).
 
 Here is a sample output:
 
