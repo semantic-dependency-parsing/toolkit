@@ -14,7 +14,7 @@ import sdp.io.GraphReader;
  */
 public class Evaluator {
 
-    private static final String PSEUDO = "-PSEUDO-";
+    private static final String PSEUDO = "-PSEUDOQ-";
     private final boolean excludeTopNodes;
     private int nEdgesReferences;
     private int nEdgesCandidates;
@@ -119,22 +119,30 @@ public class Evaluator {
         }
         referenceReader.close();
         candidateReader.close();
-        System.err.format("Number of edges in reference: %d%n", evaluator.nEdgesReferences);
-        System.err.format("Number of edges in candidates: %d%n", evaluator.nEdgesCandidates);
+        System.err.format("Number of edges in gold standard: %d%n", evaluator.nEdgesReferences);
+        System.err.format("Number of edges in system output: %d%n", evaluator.nEdgesCandidates);
         System.err.format("Number of edges in common, labeled: %d%n", evaluator.nEdgesInCommon);
         System.err.format("Number of edges in common, unlabeled: %d%n", evaluator.nEdgesInCommonUnlabeled);
-        System.err.format("P: %f%n", evaluator.getPrecision());
-        System.err.format("R: %f%n", evaluator.getRecall());
-        System.err.format("F: %f%n", evaluator.getF1());
+        System.err.println();
+        System.err.format("LP: %f%n", evaluator.getPrecision());
+        System.err.format("LR: %f%n", evaluator.getRecall());
+        System.err.format("LF: %f%n", evaluator.getF1());
     }
 
     public static void main(String[] args) throws Exception {
         Evaluator evaluator1 = new Evaluator(false);
         Evaluator evaluator2 = new Evaluator(true);
-        System.err.println("Scores including top nodes:");
+        System.err.println("# Evaluation");
+        System.err.println();
+        System.err.format("Gold standard file: %s%n", args[0]);
+        System.err.format("System output file: %s%n", args[1]);
+        System.err.println();
+        System.err.println("## Scores including virtual dependencies to top nodes");
+        System.err.println();
         evaluate(evaluator1, args[0], args[1]);
         System.err.println();
-        System.err.println("Scores excluding top nodes:");
+        System.err.println("## Scores excluding virtual dependencies to top nodes");
+        System.err.println();
         evaluate(evaluator2, args[0], args[1]);
     }
 }
