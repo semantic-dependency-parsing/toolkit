@@ -14,12 +14,15 @@ import sdp.io.GraphReader;
  */
 public class Evaluator {
 
-    private static final String PSEUDO = "-PSEUDOQ-";
+    private static final String VIRTUAL = "-VIRTUAL-";
     private final boolean excludeTopNodes;
+    private int nGraphs;
     private int nEdgesReferences;
     private int nEdgesCandidates;
     private int nEdgesInCommon;
     private int nEdgesInCommonUnlabeled;
+    private int nExactMatches;
+    private int nExactMatchesUnlabeled;
 
     public Evaluator(boolean excludeTopNodes) {
         this.excludeTopNodes = excludeTopNodes;
@@ -36,47 +39,64 @@ public class Evaluator {
         } else {
             int nNodes = reference.getNNodes();
 
+            int nEdgesR = 0;
+            int nEdgesC = 0;
+            int nEdgesI = 0;
+            int nEdgesIU = 0;
+
             boolean[][] hasEdgeReference = new boolean[nNodes][nNodes];
             String[][] labelsReference = new String[nNodes][nNodes];
             for (Edge edge : reference.getEdges()) {
-                nEdgesReferences++;
+                nEdgesR++;
                 int src = edge.source;
+                assert src != 0;
                 int tgt = edge.target;
                 hasEdgeReference[src][tgt] = true;
                 labelsReference[src][tgt] = edge.label;
             }
             for (Node node : reference.getNodes()) {
                 if (node.isTop && !excludeTopNodes) {
-                    nEdgesReferences++;
+                    nEdgesR++;
                     int src = 0;
                     int tgt = node.id;
                     hasEdgeReference[src][tgt] = true;
-                    labelsReference[src][tgt] = PSEUDO;
+                    labelsReference[src][tgt] = VIRTUAL;
                 }
             }
 
             for (Edge edge : candidate.getEdges()) {
-                nEdgesCandidates++;
+                nEdgesC++;
                 int src = edge.source;
+                assert src != 0;
                 int tgt = edge.target;
                 if (hasEdgeReference[src][tgt]) {
-                    nEdgesInCommonUnlabeled++;
+                    nEdgesIU++;
                     if (edge.label.equals(labelsReference[src][tgt])) {
-                        nEdgesInCommon++;
+                        nEdgesI++;
                     }
                 }
             }
             for (Node node : candidate.getNodes()) {
                 if (node.isTop && !excludeTopNodes) {
-                    nEdgesCandidates++;
+                    nEdgesC++;
                     int src = 0;
                     int tgt = node.id;
                     if (hasEdgeReference[src][tgt]) {
-                        nEdgesInCommonUnlabeled++;
-                        nEdgesInCommon++;
+                        nEdgesIU++;
+                        nEdgesI++;
                     }
                 }
             }
+
+            nGraphs++;
+
+            nEdgesReferences += nEdgesR;
+            nEdgesCandidates += nEdgesC;
+            nEdgesInCommon += nEdgesI;
+            nEdgesInCommonUnlabeled += nEdgesIU;
+
+            nExactMatches += nEdgesI == nEdgesR ? 1 : 0;
+            nExactMatchesUnlabeled += nEdgesIU == nEdgesR ? 1 : 0;
         }
     }
 
@@ -108,6 +128,14 @@ public class Evaluator {
         return 2.0 * p * r / (p + r);
     }
 
+    public double getExactMatch() {
+        return (double) nExactMatches / (double) nGraphs;
+    }
+
+    public double getUnlabeledExactMatch() {
+        return (double) nExactMatchesUnlabeled / (double) nGraphs;
+    }
+
     private static void evaluate(Evaluator evaluator, String referencesFile, String candidatesFile) throws Exception {
         GraphReader referenceReader = new GraphReader(referencesFile);
         GraphReader candidateReader = new GraphReader(candidatesFile);
@@ -124,9 +152,19 @@ public class Evaluator {
         System.err.format("Number of edges in common, labeled: %d%n", evaluator.nEdgesInCommon);
         System.err.format("Number of edges in common, unlabeled: %d%n", evaluator.nEdgesInCommonUnlabeled);
         System.err.println();
+        System.err.println("### Labeled scores");
+        System.err.println();
         System.err.format("LP: %f%n", evaluator.getPrecision());
         System.err.format("LR: %f%n", evaluator.getRecall());
         System.err.format("LF: %f%n", evaluator.getF1());
+        System.err.format("LM: %f%n", evaluator.getExactMatch());
+        System.err.println();
+        System.err.println("### Unlabeled scores");
+        System.err.println();
+        System.err.format("UP: %f%n", evaluator.getUnlabeledPrecision());
+        System.err.format("UR: %f%n", evaluator.getUnlabeledRecall());
+        System.err.format("UF: %f%n", evaluator.getUnlabeledF1());
+        System.err.format("UM: %f%n", evaluator.getUnlabeledExactMatch());
     }
 
     public static void main(String[] args) throws Exception {
