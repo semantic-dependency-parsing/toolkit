@@ -9,29 +9,80 @@ import sdp.graph.Node;
 import sdp.io.GraphReader;
 
 /**
+ * Score a collection of dependency graphs relative to a gold standard.
  *
  * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
  */
 public class Evaluator {
 
+    /**
+     * The label used for virtual edges.
+     */
     private static final String VIRTUAL = "-VIRTUAL-";
+
+    /**
+     * A flag indicating whether to exclude top nodes when scoring graphs.
+     */
     private final boolean excludeTopNodes;
+
+    /**
+     * Counter to store the number of graphs read.
+     */
     private int nGraphs;
+
+    /**
+     * Counter for the number of edges in the gold standard.
+     */
     private int nEdgesReferences;
+
+    /**
+     * Counter for the number of edges in the system output.
+     */
     private int nEdgesCandidates;
+
+    /**
+     * Counter for the number of common edges.
+     */
     private int nEdgesInCommon;
+
+    /**
+     * Counter for the number of common unlabeled edges.
+     */
     private int nEdgesInCommonUnlabeled;
+
+    /**
+     * Counter for the number of exact matches.
+     */
     private int nExactMatches;
+
+    /**
+     * Counter for the number of exact unlabeled matches.
+     */
     private int nExactMatchesUnlabeled;
 
+    /**
+     * Construct a new scorer.
+     *
+     * @param excludeTopNodes flag indicating whether the scorer should exclude
+     * top nodes
+     */
     public Evaluator(boolean excludeTopNodes) {
         this.excludeTopNodes = excludeTopNodes;
     }
 
+    /**
+     * Construct a new scorer.
+     */
     public Evaluator() {
         this(false);
     }
 
+    /**
+     * Updates this scorer with the specified pair of graphs.
+     *
+     * @param reference the graph that should be considered as the gold standard
+     * @param candidate the graph that should be considered as the system output
+     */
     public void update(Graph reference, Graph candidate) {
         assert reference.getNNodes() == candidate.getNNodes();
         if (reference.getNNodes() != candidate.getNNodes()) {
@@ -100,42 +151,90 @@ public class Evaluator {
         }
     }
 
+    /**
+     * Returns the precision computed by this scorer.
+     *
+     * @return the precision computed by this scorer
+     */
     public double getPrecision() {
         return (double) nEdgesInCommon / (double) nEdgesCandidates;
     }
 
+    /**
+     * Returns the recall computed by this scorer.
+     *
+     * @return the recall computed by this scorer
+     */
     public double getRecall() {
         return (double) nEdgesInCommon / (double) nEdgesReferences;
     }
 
+    /**
+     * Returns the F1-score computed by this scorer.
+     *
+     * @return the F1-score computed by this scorer
+     */
     public double getF1() {
         double p = getPrecision();
         double r = getRecall();
         return 2.0 * p * r / (p + r);
     }
 
+    /**
+     * Returns the unlabeled precision computed by this scorer.
+     *
+     * @return the unlabeled precision computed by this scorer
+     */
     public double getUnlabeledPrecision() {
         return (double) nEdgesInCommonUnlabeled / (double) nEdgesCandidates;
     }
 
+    /**
+     * Returns the unlabeled recall computed by this scorer.
+     *
+     * @return the unlabeled recall computed by this scorer
+     */
     public double getUnlabeledRecall() {
         return (double) nEdgesInCommonUnlabeled / (double) nEdgesReferences;
     }
 
+    /**
+     * Returns the unlabeled F1-score computed by this scorer.
+     *
+     * @return the unlabeled F1-score computed by this scorer
+     */
     public double getUnlabeledF1() {
         double p = getUnlabeledPrecision();
         double r = getUnlabeledRecall();
         return 2.0 * p * r / (p + r);
     }
 
+    /**
+     * Returns the exact match score computed by this scorer.
+     *
+     * @return the exact match score computed by this scorer
+     */
     public double getExactMatch() {
         return (double) nExactMatches / (double) nGraphs;
     }
 
+    /**
+     * Returns the unlabeled exact match score computed by this scorer.
+     *
+     * @return the unlabeled exact match score computed by this scorer
+     */
     public double getUnlabeledExactMatch() {
         return (double) nExactMatchesUnlabeled / (double) nGraphs;
     }
 
+    /**
+     * Evaluates the graphs in the specified files using the specified scorer.
+     *
+     * @param evaluator the evaluator to be used for the scoring
+     * @param referencesFile the file containing the reference graphs
+     * @param candidatesFile the file containing the candidate graphs
+     * @throws Exception if an I/O error occurs
+     */
     private static void evaluate(Evaluator evaluator, String referencesFile, String candidatesFile) throws Exception {
         GraphReader referenceReader = new GraphReader(referencesFile);
         GraphReader candidateReader = new GraphReader(candidatesFile);
@@ -167,6 +266,12 @@ public class Evaluator {
         System.err.format("UM: %f%n", evaluator.getUnlabeledExactMatch());
     }
 
+    /**
+     * Compute scores for two files.
+     * 
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         Evaluator evaluator1 = new Evaluator(false);
         Evaluator evaluator2 = new Evaluator(true);

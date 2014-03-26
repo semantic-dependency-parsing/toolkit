@@ -190,7 +190,7 @@ public class InspectedGraph {
     }
 
     /**
-     * Tests whether the inspected graph is projected. A graph is projective if
+     * Tests whether the inspected graph is projective. A graph is projective if
      * there are no overlapping edges, and no edge covers some root node.
      *
      * @return {@code true} if and only if the inspected graph is projective

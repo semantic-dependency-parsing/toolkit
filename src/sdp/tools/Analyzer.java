@@ -15,19 +15,47 @@ import sdp.io.GraphReader;
  */
 public class Analyzer {
 
+    // The number of graphs read.
     private int nGraphs;
+
+    // The number of nodes seen.
     private int nNodes;
+
+    // Counter to compute the average number of top nodes per graph.
     private double avgNTopNodes;
+
+    // Counter to compute the average number of structutral roots per graph.
     private double avgNStructuralRoots;
+
+    // Counter to compute the percentage of semi-connected graphs.
     private double pcSemiConnected;
+
+    // Counter to compute the percentage of reentrant graphs.
     private double pcReentrant;
+
+    // Counter to compute the number of cyclic graphs.
     private double pcCyclic;
+
+    // Counter to compute the maximal indegree of a node.
     private int maxIndegreeGlobal;
+
+    // Counter to compute the average indegree per node.
     private double avgIndegreeGlobal;
+
+    // Counter to compute the maximal outdegree of a node.
     private int maxOutdegreeGlobal;
+
+    // Counter to compute the average outdegree per node.
     private double avgOutdegreeGlobal;
+
+    // Counter to compute the average number of singletons per graph.
     private double avgSingletons;
 
+    /**
+     * Updates the statistics with the specified graph.
+     *
+     * @param graph a semantic dependency graph
+     */
     public void update(Graph graph) {
         InspectedGraph inspectedGraph = new InspectedGraph(graph);
 
@@ -84,6 +112,7 @@ public class Analyzer {
         maxIndegreeGlobal = Math.max(maxIndegreeGlobal, maxIndegree);
         avgSingletons += nSingletons;
 
+        // Print graph-specific statistics.
         System.out.format("%s", graph.id);
         // number of top nodes
         System.out.format("\t%d", nTopNodes);
@@ -96,6 +125,9 @@ public class Analyzer {
         System.out.println();
     }
 
+    /**
+     * Finalizes the computation of the statistics.
+     */
     public void finish() {
         avgIndegreeGlobal /= nNodes;
         avgOutdegreeGlobal /= nNodes;
@@ -108,6 +140,12 @@ public class Analyzer {
         avgSingletons /= nGraphs;
     }
 
+    /**
+     * Prints statistics about a set of graphs.
+     *
+     * @param args names of files from which to read graphs
+     * @throws Exception if an I/O exception occurs
+     */
     public static void main(String[] args) throws Exception {
         Analyzer analyzer = new Analyzer();
         for (String arg : args) {

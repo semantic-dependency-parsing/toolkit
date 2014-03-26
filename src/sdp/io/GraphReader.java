@@ -78,6 +78,7 @@ public class GraphReader extends ParagraphReader {
             // Add the wall node.
             graph.addNode(Constants.WALL_FORM, Constants.WALL_LEMMA, Constants.WALL_POS, false, false);
 
+            // Add the token nodes to the graph and collect a list of predicates.
             List<Integer> predicates = new ArrayList<Integer>();
             for (String line : lines.subList(1, lines.size())) {
                 String[] tokens = line.split(Constants.COLUMN_SEPARATOR);
@@ -104,8 +105,8 @@ public class GraphReader extends ParagraphReader {
                 }
             }
 
+            // Add the edges to the graph.
             int id = 1;
-
             for (String line : lines.subList(1, lines.size())) {
                 String[] tokens = line.split(Constants.COLUMN_SEPARATOR);
 
@@ -117,7 +118,6 @@ public class GraphReader extends ParagraphReader {
                         graph.addEdge(predicates.get(i - 6), id, tokens[i]);
                     }
                 }
-
                 id++;
             }
 

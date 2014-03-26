@@ -8,7 +8,8 @@ import sdp.io.GraphReader;
 import sdp.io.GraphWriter;
 
 /**
- *
+ * Splits the SDP training data into training and development.
+ * 
  * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
  */
 public class Splitter {
