@@ -1,12 +1,12 @@
 # SemEval 2014 Task on Broad-Coverage Semantic Dependency Parsing
 
-This repository contains a basic Java toolkit intended to be used in connection with the SemEval 2014 Task on Broad-Coverage Semantic Dependency Parsing. Detailed information about the task can be found at this website:
+This repository contains a Java toolkit intended to be used in connection with the SemEval 2014 Task on Broad-Coverage Semantic Dependency Parsing. Detailed information about the task can be found at this website:
 
 [http://alt.qcri.org/semeval2014/task8/](http://alt.qcri.org/semeval2014/task8/)
 
 ## Downloading
 
-The project is currently only available via Git. We plan to make a download available when the software has stabilized.
+The project is currently only available via Git.
 
 ## Building
 
@@ -18,37 +18,20 @@ This will create a file `dist/sdp.jar` with the compiled classes. The jar can th
 
 ## Command-line tools
 
-Some of the tools implemented in the project can be called from the command line. For this there is a convenience shell script called `run.sh`, which you call with the name of the tool and any command-line arguments. The most revelant example is the evaluator (scorer) tool:
+Some of the tools implemented in the project can be called from the command line. For this there is a convenience shell script called `run.sh`, which you call with the name of the tool and any command-line arguments. The most revelant example is the `Scorer` tool, which is run as follows:
 
-	$ sh run.sh Evaluator gold.sdp system.sdp
+	$ sh run.sh Scorer gold.sdp system.sdp
 
-This will evaluate the parser output in the file `system.sdp` based on the gold-standard analyses in the file `gold.sdp`. The central figures are LP (labeled precision), LR (labeled recall), and LF (labeled F1), as defined on the [Evaluation page](http://alt.qcri.org/semeval2014/task8/index.php?id=evaluation).
+This will evaluate the parser output in the file `system.sdp` based on the gold-standard analyses in the file `gold.sdp`. The evaluation metrics used are defined on the [Evaluation page](http://alt.qcri.org/semeval2014/task8/index.php?id=evaluation).
 
-Here is a sample output:
+Abbreviations:
 
-	# Evaluation
+	LP: labeled precision
+	LR: labeled recall
+	LF: labeled F1
+	LM: labeled exact match
 	
-	Gold standard file: baseline/dm.gold.sdp
-	System output file: baseline/dm.mate.sdp
-	
-	## Scores including virtual dependencies to top nodes
-	
-	Number of edges in gold standard: 27778
-	Number of edges in system output: 13598
-	Number of edges in common, labeled: 11313
-	Number of edges in common, unlabeled: 11596
-	
-	LP: 0.831961
-	LR: 0.407265
-	LF: 0.546839
-	
-	## Scores excluding virtual dependencies to top nodes
-	
-	Number of edges in gold standard: 26165
-	Number of edges in system output: 13598
-	Number of edges in common, labeled: 11313
-	Number of edges in common, unlabeled: 11596
-	
-	LP: 0.831961
-	LR: 0.432371
-	LF: 0.569021
+	UP: unlabeled precision
+	UR: unlabeled recall
+	UF: unlabeled F1
+	UM: unlabeled exact match
