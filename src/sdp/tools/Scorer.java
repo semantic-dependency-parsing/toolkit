@@ -3,6 +3,8 @@
  */
 package sdp.tools;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,14 +47,14 @@ public class Scorer {
     private int nGraphs;
 
     /**
-     * Set containing the edges from the reference graphs.
+     * Set containing the edges from the gold standard graphs.
      */
-    private final Set<ScorerEdge> edgesReference;
+    private final Set<ScorerEdge> edgesInGoldStandard;
 
     /**
-     * Set containing the edges from the candidate graphs.
+     * Set containing the edges from the system output graphs.
      */
-    private final Set<ScorerEdge> edgesCandidate;
+    private final Set<ScorerEdge> edgesInSystemOutput;
 
     /**
      * Counter for the number of exact matches.
@@ -70,8 +72,8 @@ public class Scorer {
     public Scorer(boolean includeLabels, boolean includeTopNodes) {
 	this.includeLabels = includeLabels;
 	this.includeTopNodes = includeTopNodes;
-	this.edgesReference = new HashSet<ScorerEdge>();
-	this.edgesCandidate = new HashSet<ScorerEdge>();
+	this.edgesInGoldStandard = new HashSet<ScorerEdge>();
+	this.edgesInSystemOutput = new HashSet<ScorerEdge>();
     }
 
     /**
@@ -84,20 +86,22 @@ public class Scorer {
     /**
      * Updates this scorer with the specified pair of graphs.
      *
-     * @param reference the graph that should be considered as the gold standard
-     * @param candidate the graph that should be considered as the system output
+     * @param goldStandard the graph that should be considered as the gold
+     * standard
+     * @param systemOutput the graph that should be considered as the system
+     * output
      */
-    public void update(Graph reference, Graph candidate) {
-	assert reference.getNNodes() == candidate.getNNodes();
+    public void update(Graph goldStandard, Graph systemOutput) {
+	assert goldStandard.getNNodes() == systemOutput.getNNodes();
 
-	Set<ScorerEdge> edgesR = getEdges(reference);
-	Set<ScorerEdge> edgesC = getEdges(candidate);
+	Set<ScorerEdge> edgesG = getEdges(goldStandard);
+	Set<ScorerEdge> edgesS = getEdges(systemOutput);
 
 	nGraphs++;
-	nExactMatches += edgesR.equals(edgesC) ? 1 : 0;
+	nExactMatches += edgesG.equals(edgesS) ? 1 : 0;
 
-	edgesReference.addAll(edgesR);
-	edgesCandidate.addAll(edgesC);
+	edgesInGoldStandard.addAll(edgesG);
+	edgesInSystemOutput.addAll(edgesS);
     }
 
     /**
@@ -122,12 +126,22 @@ public class Scorer {
 	return edges;
     }
 
-    public int getNEdgesInReferences() {
-	return edgesReference.size();
+    /**
+     * Returns the number of edges in the gold standard.
+     *
+     * @return the number of edges in the gold standard
+     */
+    public int getNEdgesInGoldStandard() {
+	return edgesInGoldStandard.size();
     }
 
-    public int getNEdgesInCandidates() {
-	return edgesCandidate.size();
+    /**
+     * Returns the number of edges in the system output.
+     *
+     * @return the number of edges in the system output
+     */
+    public int getNEdgesInSystemOutput() {
+	return edgesInSystemOutput.size();
     }
 
     /**
@@ -136,7 +150,7 @@ public class Scorer {
      * @return the precision computed by this scorer
      */
     public double getPrecision() {
-	return (double) getNEdgesInCommon() / (double) getNEdgesInCandidates();
+	return (double) getNEdgesInCommon() / (double) getNEdgesInSystemOutput();
     }
 
     /**
@@ -145,7 +159,7 @@ public class Scorer {
      * @return the recall computed by this scorer
      */
     public double getRecall() {
-	return (double) getNEdgesInCommon() / (double) getNEdgesInReferences();
+	return (double) getNEdgesInCommon() / (double) getNEdgesInGoldStandard();
     }
 
     /**
@@ -156,11 +170,18 @@ public class Scorer {
      * output
      */
     private Set<ScorerEdge> getEdgesInCommon() {
-	Set<ScorerEdge> intersection = new HashSet<ScorerEdge>(edgesReference);
-	intersection.retainAll(edgesCandidate);
+	Set<ScorerEdge> intersection = new HashSet<ScorerEdge>(edgesInGoldStandard);
+	intersection.retainAll(edgesInSystemOutput);
 	return intersection;
     }
 
+    /**
+     * Returns the number of edges that occur both in the gold standard and in
+     * the system output.
+     *
+     * @return the number of edges that occur both in the gold standard and in
+     * the system output
+     */
     public int getNEdgesInCommon() {
 	return getEdgesInCommon().size();
     }
@@ -188,23 +209,23 @@ public class Scorer {
     /**
      * Read graphs from the specified files.
      *
-     * @param referencesFile the file containing the reference graphs
-     * @param candidatesFile the file containing the candidate graphs
+     * @param goldStandardFile the file containing the gold standard graphs
+     * @param systemOutputFile the file containing the system output graphs
      * @throws Exception if an I/O error occurs
      */
-    private static List<GraphPair> readGraphs(String referencesFile, String candidatesFile) throws Exception {
+    private static List<GraphPair> readGraphs(String goldStandardFile, String systemOutputFile) throws Exception {
 	List<GraphPair> graphPairs = new LinkedList<GraphPair>();
-	GraphReader referenceReader = new GraphReader(referencesFile);
-	GraphReader candidateReader = new GraphReader(candidatesFile);
-	Graph reference;
-	Graph candidate;
-	while ((reference = referenceReader.readGraph()) != null) {
-	    candidate = candidateReader.readGraph();
-	    graphPairs.add(new GraphPair(reference, candidate));
+	GraphReader goldStandardReader = new GraphReader(goldStandardFile);
+	GraphReader systemOutputReader = new GraphReader(systemOutputFile);
+	Graph goldStandard;
+	Graph systemOutput;
+	while ((goldStandard = goldStandardReader.readGraph()) != null) {
+	    systemOutput = systemOutputReader.readGraph();
+	    graphPairs.add(new GraphPair(goldStandard, systemOutput));
 	}
-	assert candidateReader.readGraph() == null;
-	referenceReader.close();
-	candidateReader.close();
+	assert systemOutputReader.readGraph() == null;
+	goldStandardReader.close();
+	systemOutputReader.close();
 	return graphPairs;
     }
 
@@ -216,7 +237,7 @@ public class Scorer {
      */
     private static void score(Scorer scorer, List<GraphPair> graphPairs) {
 	for (GraphPair pair : graphPairs) {
-	    scorer.update(pair.reference, pair.candidate);
+	    scorer.update(pair.goldStandard, pair.systemOutput);
 	}
     }
 
@@ -233,8 +254,8 @@ public class Scorer {
 	score(scorerL, graphPairs);
 	score(scorerU, graphPairs);
 
-	System.err.format("Number of edges in gold standard: %d%n", scorerL.getNEdgesInReferences());
-	System.err.format("Number of edges in system output: %d%n", scorerL.getNEdgesInCandidates());
+	System.err.format("Number of edges in gold standard: %d%n", scorerL.getNEdgesInGoldStandard());
+	System.err.format("Number of edges in system output: %d%n", scorerL.getNEdgesInSystemOutput());
 	System.err.format("Number of edges in common, labeled: %d%n", scorerL.getNEdgesInCommon());
 	System.err.format("Number of edges in common, unlabeled: %d%n", scorerU.getNEdgesInCommon());
 	System.err.println();
@@ -249,15 +270,26 @@ public class Scorer {
 
 	System.err.println("### Breakdown by label type");
 	System.err.println();
-	for (String label : scorerL.getLabels()) {
-	    System.err.format("%s N1: %d N2: %d P: %f R: %f%n", label, scorerL.getNEdgesReference(label), scorerL.getNEdgesCandidate(label), scorerL.getPrecisionPerLabel(label), scorerL.getRecallPerLabel(label));
+	System.err.println("Label type,Number of edges in gold standard,Number of edges in system output,Precision,Recall");
+	List<String> labels = new ArrayList<String>(scorerL.getLabels());
+	Collections.sort(labels);
+	for (String label : labels) {
+	    System.err.format("%s,%d,%d,%f,%f%n", label, scorerL.getNEdgesInGoldStandardByLabel(label), scorerL.getNEdgesInSystemOutputByLabel(label), scorerL.getPrecisionPerLabel(label), scorerL.getRecallPerLabel(label));
 	}
 	System.err.println();
 
 	System.err.println("### Breakdown by edge length");
 	System.err.println();
-	for (int length : scorerL.getLengths()) {
-	    System.err.format("%d N1: %d N2: %d P: %f R: %f%n", length, scorerL.getNEdgesReference(length), scorerL.getNEdgesCandidate(length), scorerL.getPrecisionPerLength(length), scorerL.getRecallPerLength(length));
+	List<String> quantizedLengths = new ArrayList<String>();
+	for (int i = 1; i < 100; i++) {
+	    String quantizedLength = scorerL.getQuantizedLength(i);
+	    if (!quantizedLengths.contains(quantizedLength)) {
+		quantizedLengths.add(quantizedLength);
+	    }
+	}
+	System.err.println("Edge length,Number of edges in gold standard,Number of edges in system output,Precision,Recall");
+	for (String quantizedLength : quantizedLengths) {
+	    System.err.format("%s,%d,%d,%f,%f%n", quantizedLength, scorerL.getNEdgesInGoldStandardByQuantizedLength(quantizedLength), scorerL.getNEdgesInSystemOutputByQuantizedLength(quantizedLength), scorerL.getPrecisionPerQuantizedLength(quantizedLength), scorerL.getRecallPerQuantizedLength(quantizedLength));
 	}
 	System.err.println();
 
@@ -272,8 +304,9 @@ public class Scorer {
     /**
      * Compute scores for two files.
      *
-     * @param args
-     * @throws Exception
+     * @param args the names of the files containing the gold standard graphs
+     * and the system output graphs
+     * @throws Exception if an I/O exception occurs
      */
     public static void main(String[] args) throws Exception {
 	System.err.println("# Evaluation");
@@ -297,12 +330,12 @@ public class Scorer {
 
     private static class GraphPair {
 
-	public final Graph reference;
-	public final Graph candidate;
+	public final Graph goldStandard;
+	public final Graph systemOutput;
 
-	public GraphPair(Graph reference, Graph candidate) {
-	    this.reference = reference;
-	    this.candidate = candidate;
+	public GraphPair(Graph goldStandard, Graph systemOutput) {
+	    this.goldStandard = goldStandard;
+	    this.systemOutput = systemOutput;
 	}
     }
 
@@ -318,6 +351,10 @@ public class Scorer {
 	    this.src = src;
 	    this.tgt = tgt;
 	    this.label = label;
+	}
+
+	public int getLength() {
+	    return Math.max(src, tgt) - Math.min(src, tgt);
 	}
 
 	@Override
@@ -357,40 +394,38 @@ public class Scorer {
 
     private Set<String> getLabels() {
 	Set<String> labels = new HashSet<String>();
-	for (ScorerEdge edge : edgesReference) {
+	for (ScorerEdge edge : edgesInGoldStandard) {
 	    labels.add(edge.label);
 	}
-	for (ScorerEdge edge : edgesCandidate) {
+	for (ScorerEdge edge : edgesInSystemOutput) {
 	    labels.add(edge.label);
 	}
 	return labels;
     }
 
-    private int getNEdges(String label, Set<ScorerEdge> edges) {
+    private int getNEdgesByLabel(String label, Set<ScorerEdge> edges) {
 	int n = 0;
 	for (ScorerEdge edge : edges) {
-	    if (edge.label.equals(label)) {
-		n++;
-	    }
+	    n += edge.label.equals(label) ? 1 : 0;
 	}
 	return n;
     }
 
-    private int getNEdgesReference(String label) {
-	return getNEdges(label, edgesReference);
+    private int getNEdgesInGoldStandardByLabel(String label) {
+	return getNEdgesByLabel(label, edgesInGoldStandard);
     }
 
-    private int getNEdgesCandidate(String label) {
-	return getNEdges(label, edgesCandidate);
+    private int getNEdgesInSystemOutputByLabel(String label) {
+	return getNEdgesByLabel(label, edgesInSystemOutput);
     }
 
     private double getPrecisionPerLabel(String label) {
 	int nEdges = 0;
 	int nCorrect = 0;
-	for (ScorerEdge edgeC : edgesCandidate) {
-	    if (edgeC.label.equals(label)) {
+	for (ScorerEdge edgeS : edgesInSystemOutput) {
+	    if (edgeS.label.equals(label)) {
 		nEdges++;
-		if (edgesReference.contains(edgeC)) {
+		if (edgesInGoldStandard.contains(edgeS)) {
 		    nCorrect++;
 		}
 	    }
@@ -401,10 +436,10 @@ public class Scorer {
     private double getRecallPerLabel(String label) {
 	int nEdges = 0;
 	int nCorrect = 0;
-	for (ScorerEdge edgeR : edgesReference) {
-	    if (edgeR.label.equals(label)) {
+	for (ScorerEdge edgeG : edgesInGoldStandard) {
+	    if (edgeG.label.equals(label)) {
 		nEdges++;
-		if (edgesCandidate.contains(edgeR)) {
+		if (edgesInSystemOutput.contains(edgeG)) {
 		    nCorrect++;
 		}
 	    }
@@ -412,55 +447,56 @@ public class Scorer {
 	return (double) nCorrect / (double) nEdges;
     }
 
-    private int getQuantizedLength(ScorerEdge edge) {
-	int min = Math.min(edge.src, edge.tgt);
-	int max = Math.max(edge.src, edge.tgt);
-	int length = max - min;
+    private String getQuantizedLength(int length) {
 	if (length <= 4) {
-	    return length;
+	    return Integer.toString(length);
 	} else if (length < 10) {
-	    return 5;
+	    return "5-9";
 	} else {
-	    return 10;
+	    return "10-";
 	}
     }
 
-    private Set<Integer> getLengths() {
-	Set<Integer> lengths = new HashSet<Integer>();
-	for (ScorerEdge edge : edgesReference) {
+    private String getQuantizedLength(ScorerEdge edge) {
+	return getQuantizedLength(edge.getLength());
+    }
+
+    private Set<String> getQuantizedLengths() {
+	Set<String> lengths = new HashSet<String>();
+	for (ScorerEdge edge : edgesInGoldStandard) {
 	    lengths.add(getQuantizedLength(edge));
 	}
-	for (ScorerEdge edge : edgesCandidate) {
+	for (ScorerEdge edge : edgesInSystemOutput) {
 	    lengths.add(getQuantizedLength(edge));
 	}
 	return lengths;
     }
 
-    private int getNEdges(int length, Set<ScorerEdge> edges) {
+    private int getNEdgesByQuantizedLength(String quantizedLength, Set<ScorerEdge> edges) {
 	int n = 0;
 	for (ScorerEdge edge : edges) {
-	    if (getQuantizedLength(edge) == length) {
+	    if (getQuantizedLength(edge).equals(quantizedLength)) {
 		n++;
 	    }
 	}
 	return n;
     }
 
-    private int getNEdgesReference(int length) {
-	return getNEdges(length, edgesReference);
+    private int getNEdgesInGoldStandardByQuantizedLength(String quantizedLength) {
+	return getNEdgesByQuantizedLength(quantizedLength, edgesInGoldStandard);
     }
 
-    private int getNEdgesCandidate(int length) {
-	return getNEdges(length, edgesCandidate);
+    private int getNEdgesInSystemOutputByQuantizedLength(String quantizedLength) {
+	return getNEdgesByQuantizedLength(quantizedLength, edgesInSystemOutput);
     }
 
-    private double getPrecisionPerLength(int length) {
+    private double getPrecisionPerQuantizedLength(String quantizedLength) {
 	int nEdges = 0;
 	int nCorrect = 0;
-	for (ScorerEdge edgeC : edgesCandidate) {
-	    if (getQuantizedLength(edgeC) == length) {
+	for (ScorerEdge edgeS : edgesInSystemOutput) {
+	    if (getQuantizedLength(edgeS).equals(quantizedLength)) {
 		nEdges++;
-		if (edgesReference.contains(edgeC)) {
+		if (edgesInGoldStandard.contains(edgeS)) {
 		    nCorrect++;
 		}
 	    }
@@ -468,13 +504,13 @@ public class Scorer {
 	return (double) nCorrect / (double) nEdges;
     }
 
-    private double getRecallPerLength(int length) {
+    private double getRecallPerQuantizedLength(String quantizedLength) {
 	int nEdges = 0;
 	int nCorrect = 0;
-	for (ScorerEdge edgeR : edgesReference) {
-	    if (getQuantizedLength(edgeR) == length) {
+	for (ScorerEdge edgeG : edgesInGoldStandard) {
+	    if (getQuantizedLength(edgeG).equals(quantizedLength)) {
 		nEdges++;
-		if (edgesCandidate.contains(edgeR)) {
+		if (edgesInSystemOutput.contains(edgeG)) {
 		    nCorrect++;
 		}
 	    }
