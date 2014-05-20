@@ -69,7 +69,7 @@ public class Analyzer {
         double avgIndegree = 0.0;
         int maxOutdegree = 0;
         double avgOutdegree = 0.0;
-        int nSingletons = 0;
+		int nSingletons = inspectedGraph.getNSingletons();
 
         for (Node node : graph.getNodes()) {
             if (node.isTop) {
@@ -86,16 +86,13 @@ public class Analyzer {
             avgIndegree += node.getNIncomingEdges();
             maxOutdegree = Math.max(maxOutdegree, node.getNOutgoingEdges());
             avgOutdegree += node.getNOutgoingEdges();
-            if (!node.hasIncomingEdges() && !node.hasOutgoingEdges()) {
-                nSingletons++;
-            }
             avgIndegreeGlobal += node.getNIncomingEdges();
             avgOutdegreeGlobal += node.getNOutgoingEdges();
         }
         if (inspectedGraph.isCyclic()) {
             isCyclic = true;
         }
-        if (inspectedGraph.getNComponents() - nSingletons > 1) {
+        if (inspectedGraph.getNComponents() > 1) {
             isSemiConnected = false;
         }
         avgIndegree /= (double) graph.getNNodes();
