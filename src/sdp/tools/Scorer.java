@@ -364,7 +364,7 @@ public class Scorer {
 			}
 			if (arg.equals("treatEdgesAsUndirected")) {
 				System.err.println("Will treat edges as undirected.");
-				treatEdgesAsUndirected = false;
+				treatEdgesAsUndirected = true;
 			}
 		}
 
