@@ -45,7 +45,7 @@ public class Analyzer {
 	private int nTrees;
 
 	// Number of graphs that are semi-connected.
-	private int nSemiConnected;
+	private int nFragmented;
 
 	// Number of nodes that have more than one incoming edge.
 	private int nReentrantNodes;
@@ -58,6 +58,9 @@ public class Analyzer {
 
 	// Number of special nodes.
 	private int nSpecialNodes;
+
+	// Number of projective graphs.
+	private int nProjectiveGraphs;
 
 	/**
 	 * Updates the statistics with the specified graph.
@@ -93,8 +96,8 @@ public class Analyzer {
 		// number of trees
 		nTrees += inspectedGraph.isTree() ? 1 : 0;
 
-		// number of graphs that are semi-connected
-		nSemiConnected += inspectedGraph.getNComponents() - 1 - inspectedGraph.getNSingletons() == 1 ? 1 : 0;
+		// number of graphs that are fragmented
+		nFragmented += inspectedGraph.getNComponents() - 1 - inspectedGraph.getNSingletons() == 1 ? 0 : 1;
 
 		// number of reentrant nodes
 		for (Node node : graph.getNodes()) {
@@ -115,8 +118,11 @@ public class Analyzer {
 
 		// number of special nodes
 		for (Node node : graph.getNodes()) {
-			nSpecialNodes += !inspectedGraph.isSingleton(node.id) && !node.hasIncomingEdges() && !node.isTop ? 1 : 0;
+			nSpecialNodes += node.id != 0 && !inspectedGraph.isSingleton(node.id) && !node.hasIncomingEdges() && !node.isTop ? 1 : 0;
 		}
+
+		// number of projective graphs
+		nProjectiveGraphs += inspectedGraph.isProjective() ? 1 : 0;
 	}
 
 	/**
@@ -143,11 +149,12 @@ public class Analyzer {
 		System.err.format("percentage of cyclic graphs: %s%n", percentage(analyzer.nCyclic, analyzer.nGraphs));
 		System.err.format("percentage of graphs that are forests: %s%n", percentage(analyzer.nForests, analyzer.nGraphs));
 		System.err.format("percentage of graphs that are trees: %s%n", percentage(analyzer.nTrees, analyzer.nGraphs));
-		System.err.format("percentage of graphs that are semi-connected: %s%n", percentage(analyzer.nSemiConnected, analyzer.nGraphs));
+		System.err.format("percentage of graphs that are fragmented: %s%n", percentage(analyzer.nFragmented, analyzer.nGraphs));
 		System.err.format("percentage of (non-singleton) nodes that are reentrant: %s%n", percentage(analyzer.nReentrantNodes, analyzer.nNonWallNodes - analyzer.nSingletons));
 		System.err.format("percentage of topless graphs: %s%n", percentage(analyzer.nToplessGraphs, analyzer.nGraphs));
 		System.err.format("average number of top nodes per graph: %s%n", fraction(analyzer.nTopNodes, analyzer.nGraphs));
 		System.err.format("percentage of (non-singleton) nodes with indegree = 0 that are not top: %s%n", percentage(analyzer.nSpecialNodes, analyzer.nNonWallNodes - analyzer.nSingletons));
+		System.err.format("percentage of projective graphs: %s%n", percentage(analyzer.nProjectiveGraphs, analyzer.nGraphs));
 	}
 
 	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getIntegerInstance(Locale.ENGLISH);

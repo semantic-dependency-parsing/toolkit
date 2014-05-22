@@ -171,7 +171,7 @@ public class InspectedGraph {
 		for (Node node : graph.getNodes()) {
 			nLeafNodes += node.hasOutgoingEdges() ? 0 : 1;
 		}
-		return nLeafNodes - 1;//the wall node
+		return nLeafNodes - 1; // the wall node
 	}
 
 	/**
@@ -191,7 +191,7 @@ public class InspectedGraph {
 	 * @return {@code true} if and only if the inspected graph is a tree
 	 */
 	public boolean isTree() {
-		return isForest() && getNRootNodes() == 1;
+		return isForest() && getNRootNodes() - getNSingletons() == 1;
 	}
 
 	/**
