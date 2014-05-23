@@ -211,6 +211,12 @@ public class InspectedGraph {
 					return false;
 				}
 			}
+			for (int i = min1 + 1; i < max1; i++) {
+				Node node = graph.getNode(i);
+				if (!isSingleton(i) && !node.hasIncomingEdges()) {
+					return false;
+				}
+			}
 		}
 		return true;
 	}
