@@ -253,6 +253,41 @@ public class Scorer {
 	}
 
 	/**
+	 * Quantifies the confidence that the gold standard and the system output
+	 * are different. This uses McNemar's test for proportions.
+	 *
+	 * @return a number quantifying the confidence that the differences between
+	 * the gold standard and the system output are significant
+	 */
+	public double getConfidence() {
+		double b = getNEdgesInGoldStandard() - getNEdgesInCommon();
+		double c = getNEdgesInSystemOutput() - getNEdgesInCommon();
+		return Math.pow(Math.abs(b - c) - 0.5, 2) / (b + c);
+	}
+
+	/**
+	 * Tests whether the differences between the gold standard and the system
+	 * output are significant at the 0.95 level.
+	 *
+	 * @return {@code true} if the differences between the gold standard and the
+	 * system output are significant at the 0.95 level
+	 */
+	public boolean isSignificantAt95() {
+		return getConfidence() > 3.84;
+	}
+
+	/**
+	 * Tests whether the differences between the gold standard and the system
+	 * output are significant at the 0.99 level.
+	 *
+	 * @return {@code true} if the differences between the gold standard and the
+	 * system output are significant at the 0.99 level
+	 */
+	public boolean isSignificantAt99() {
+		return getConfidence() > 6.63;
+	}
+
+	/**
 	 * Read graphs from the specified files.
 	 *
 	 * @param goldStandardFile the file containing the gold standard graphs
@@ -304,6 +339,8 @@ public class Scorer {
 		System.err.format("Number of edges in system output: %d%n", scorerL.getNEdgesInSystemOutput());
 		System.err.format("Number of edges in common, labeled: %d%n", scorerL.getNEdgesInCommon());
 		System.err.format("Number of edges in common, unlabeled: %d%n", scorerU.getNEdgesInCommon());
+		System.err.println();
+		System.err.format("Gold standard and system output are significantly different: %s%n", scorerL.isSignificantAt99() ? "yes" : "no");
 		System.err.println();
 
 		System.err.println("### Labeled scores");
