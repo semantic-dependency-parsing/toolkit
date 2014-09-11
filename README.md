@@ -1,8 +1,11 @@
-# SemEval 2014 Task on Broad-Coverage Semantic Dependency Parsing
+# Semantic Dependency Parsing Toolkit
 
-This repository contains a Java toolkit intended to be used in connection with the SemEval 2014 Task on Broad-Coverage Semantic Dependency Parsing. Detailed information about the task can be found at this website:
+This repository contains a Java toolkit for semantic dependency parsing. It has been developed in connection with two shared tasks:
 
-[http://alt.qcri.org/semeval2014/task8/](http://alt.qcri.org/semeval2014/task8/)
+* [SemEval-2014 Task on Broad-Coverage Semantic Dependency Parsing](http://alt.qcri.org/semeval2014/task8/)
+* [SemEval-2015 Task on Broad-Coverage Semantic Dependency Parsing](http://alt.qcri.org/semeval2015/task18/)
+
+Detailed information about the tasks can be found at the respective websites.
 
 ## Downloading
 
