@@ -19,14 +19,14 @@ import sdp.graph.Node;
  *
  * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
  */
-public class GraphReader extends ParagraphReader {
+public class GraphReader2014 extends ParagraphReader {
 
 	/**
 	 * Create a graph reader, using the default input-buffer size.
 	 *
 	 * @param reader a Reader object to provide the underlying stream
 	 */
-	public GraphReader(Reader reader) {
+	public GraphReader2014(Reader reader) {
 		super(reader);
 	}
 
@@ -39,7 +39,7 @@ public class GraphReader extends ParagraphReader {
 	 * directory rather than a regular file, or for some other reason cannot be
 	 * opened for reading
 	 */
-	public GraphReader(File file) throws FileNotFoundException {
+	public GraphReader2014(File file) throws FileNotFoundException {
 		super(file);
 	}
 
@@ -52,7 +52,7 @@ public class GraphReader extends ParagraphReader {
 	 * directory rather than a regular file, or for some other reason cannot be
 	 * opened for reading
 	 */
-	public GraphReader(String fileName) throws FileNotFoundException {
+	public GraphReader2014(String fileName) throws FileNotFoundException {
 		super(fileName);
 	}
 

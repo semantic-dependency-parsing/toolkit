@@ -12,7 +12,7 @@ import java.util.Set;
 import sdp.graph.Edge;
 import sdp.graph.Graph;
 import sdp.graph.Node;
-import sdp.io.GraphReader;
+import sdp.io.GraphReader2014;
 
 /**
  * Score a collection of dependency graphs relative to a gold standard.
@@ -261,8 +261,8 @@ public class Scorer {
 	 */
 	private static List<GraphPair> readGraphs(String goldStandardFile, String systemOutputFile) throws Exception {
 		List<GraphPair> graphPairs = new LinkedList<GraphPair>();
-		GraphReader goldStandardReader = new GraphReader(goldStandardFile);
-		GraphReader systemOutputReader = new GraphReader(systemOutputFile);
+		GraphReader2014 goldStandardReader = new GraphReader2014(goldStandardFile);
+		GraphReader2014 systemOutputReader = new GraphReader2014(systemOutputFile);
 		Graph goldStandard;
 		Graph systemOutput;
 		while ((goldStandard = goldStandardReader.readGraph()) != null) {

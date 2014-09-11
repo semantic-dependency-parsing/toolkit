@@ -17,7 +17,7 @@ import sdp.graph.Node;
  *
  * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
  */
-public class GraphWriter {
+public class GraphWriter2014 {
 
     /**
      * The low-level writer.
@@ -29,7 +29,7 @@ public class GraphWriter {
      *
      * @param writer the PrintWriter to be written to
      */
-    public GraphWriter(PrintWriter writer) {
+    public GraphWriter2014(PrintWriter writer) {
         this.writer = writer;
     }
 
@@ -41,7 +41,7 @@ public class GraphWriter {
      * rather than a regular file, or for some other reason cannot be opened for
      * writing
      */
-    public GraphWriter(File file) throws IOException {
+    public GraphWriter2014(File file) throws IOException {
         this(new PrintWriter(new BufferedWriter(new FileWriter(file))));
     }
 
@@ -53,7 +53,7 @@ public class GraphWriter {
      * rather than a regular file, or for some other reason cannot be opened for
      * writing
      */
-    public GraphWriter(String fileName) throws IOException {
+    public GraphWriter2014(String fileName) throws IOException {
         this(new File(fileName));
     }
 
