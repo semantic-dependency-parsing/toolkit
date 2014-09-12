@@ -12,7 +12,7 @@ import sdp.graph.Graph;
 import sdp.graph.InspectedGraph;
 import sdp.graph.Node;
 import sdp.io.GraphReader;
-import sdp.io.GraphReader2014;
+import sdp.io.GraphReader2015;
 
 /**
  * Print statistics about a collection of graphs.
@@ -59,6 +59,9 @@ public class Analyzer {
 
 	// Number of special nodes.
 	private int nSpecialNodes;
+
+	// Number of noncrossing graphs.
+	private int nNoncrossingGraphs;
 
 	// Number of projective graphs.
 	private int nProjectiveGraphs;
@@ -122,6 +125,9 @@ public class Analyzer {
 			nSpecialNodes += node.id != 0 && !inspectedGraph.isSingleton(node.id) && !node.hasIncomingEdges() && !node.isTop ? 1 : 0;
 		}
 
+		// number of noncrossing graphs
+		nNoncrossingGraphs += inspectedGraph.isNoncrossing() ? 1 : 0;
+
 		// number of projective graphs
 		nProjectiveGraphs += inspectedGraph.isProjective() ? 1 : 0;
 	}
@@ -135,7 +141,7 @@ public class Analyzer {
 	public static void main(String[] args) throws Exception {
 		Analyzer analyzer = new Analyzer();
 		for (String arg : args) {
-			GraphReader reader = new GraphReader2014(arg);
+			GraphReader reader = new GraphReader2015(arg);
 			Graph graph;
 			while ((graph = reader.readGraph()) != null) {
 				analyzer.update(graph);
@@ -155,6 +161,7 @@ public class Analyzer {
 		System.err.format("percentage of topless graphs: %s%n", percentage(analyzer.nToplessGraphs, analyzer.nGraphs));
 		System.err.format("average number of top nodes per graph: %s%n", fraction(analyzer.nTopNodes, analyzer.nGraphs));
 		System.err.format("percentage of (non-singleton) nodes with indegree = 0 that are not top: %s%n", percentage(analyzer.nSpecialNodes, analyzer.nNonWallNodes - analyzer.nSingletons));
+		System.err.format("percentage of noncrossing graphs: %s%n", percentage(analyzer.nNoncrossingGraphs, analyzer.nGraphs));
 		System.err.format("percentage of projective graphs: %s%n", percentage(analyzer.nProjectiveGraphs, analyzer.nGraphs));
 	}
 

@@ -195,12 +195,12 @@ public class InspectedGraph {
 	}
 
 	/**
-	 * Tests whether the inspected graph is projective. A graph is projective if
-	 * there are no overlapping edges.
+	 * Tests whether the inspected graph is noncrossing. A graph is noncrossing
+	 * if there are no overlapping edges.
 	 *
-	 * @return {@code true} if and only if the inspected graph is projective
+	 * @return {@code true} if and only if the inspected graph is noncrossing
 	 */
-	public boolean isProjective() {
+	public boolean isNoncrossing() {
 		for (Edge edge1 : graph.getEdges()) {
 			int min1 = Math.min(edge1.source, edge1.target);
 			int max1 = Math.max(edge1.source, edge1.target);
@@ -208,12 +208,6 @@ public class InspectedGraph {
 				int min2 = Math.min(edge2.source, edge2.target);
 				int max2 = Math.max(edge2.source, edge2.target);
 				if (overlap(min1, max1, min2, max2)) {
-					return false;
-				}
-			}
-			for (int i = min1 + 1; i < max1; i++) {
-				Node node = graph.getNode(i);
-				if (!isSingleton(i) && !node.hasIncomingEdges()) {
 					return false;
 				}
 			}
@@ -232,5 +226,31 @@ public class InspectedGraph {
 	 */
 	private static boolean overlap(int min1, int max1, int min2, int max2) {
 		return min1 < min2 && min2 < max1 && max1 < max2 || min2 < min1 && min1 < max2 && max2 < max1;
+	}
+
+	/**
+	 * Tests whether the inspected graph is projective. A graph is projective if
+	 * it is noncrossing and there are no covered roots. In the context of
+	 * semantic dependency graphs, a <em>root</em> is defined as a non-singleton
+	 * node without incoming edges.
+	 *
+	 * @return {@code true} if and only if the inspected graph is projective
+	 */
+	public boolean isProjective() {
+		if (!isNoncrossing()) {
+			return false;
+		} else {
+			for (Edge edge : graph.getEdges()) {
+				int min = Math.min(edge.source, edge.target);
+				int max = Math.max(edge.source, edge.target);
+				for (int i = min + 1; i < max; i++) {
+					Node node = graph.getNode(i);
+					if (!isSingleton(i) && !node.hasIncomingEdges()) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
 	}
 }
