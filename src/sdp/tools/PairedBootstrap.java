@@ -13,6 +13,7 @@ import java.util.Set;
 import sdp.graph.Edge;
 import sdp.graph.Graph;
 import sdp.graph.Node;
+import sdp.io.GraphReader;
 import sdp.io.GraphReader2014;
 
 /**
@@ -68,7 +69,7 @@ public class PairedBootstrap {
 
 	private static List<Graph> readGraphs(String fileName) throws FileNotFoundException, IOException {
 		List<Graph> graphs = new ArrayList<Graph>();
-		GraphReader2014 reader = new GraphReader2014(fileName);
+		GraphReader reader = new GraphReader2014(fileName);
 		Graph graph;
 		while ((graph = reader.readGraph()) != null) {
 			graphs.add(graph);

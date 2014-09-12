@@ -13,13 +13,13 @@ import sdp.graph.Graph;
 import sdp.graph.Node;
 
 /**
- * Read semantic dependency graphs from a file. This reader implements the
- * format described at
+ * Read semantic dependency graphs in the SDP 2014 format. The format is
+ * specified at
  * {@link http://alt.qcri.org/semeval2014/task8/index.php?id=dependency-formats}.
  *
  * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
  */
-public class GraphReader2014 extends ParagraphReader {
+public class GraphReader2014 extends ParagraphReader implements GraphReader {
 
 	/**
 	 * Create a graph reader, using the default input-buffer size.
@@ -63,6 +63,7 @@ public class GraphReader2014 extends ParagraphReader {
 	 * reached
 	 * @throws IOException if an I/O error occurs
 	 */
+	@Override
 	public Graph readGraph() throws IOException {
 		List<String> lines = super.readParagraph();
 		if (lines == null) {

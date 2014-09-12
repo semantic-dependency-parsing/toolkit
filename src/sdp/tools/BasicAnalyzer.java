@@ -5,6 +5,7 @@ package sdp.tools;
 
 import sdp.graph.Graph;
 import sdp.graph.InspectedGraph;
+import sdp.io.GraphReader;
 import sdp.io.GraphReader2014;
 
 /**
@@ -16,7 +17,7 @@ public class BasicAnalyzer {
 
     public static void main(String[] args) throws Exception {
         for (String arg : args) {
-            GraphReader2014 reader = new GraphReader2014(arg);
+            GraphReader reader = new GraphReader2014(arg);
             int nGraphs = 0;
             int nTokens = 0;
             int nCyclic = 0;

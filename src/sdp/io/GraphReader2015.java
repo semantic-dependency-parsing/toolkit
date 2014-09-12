@@ -7,19 +7,20 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import sdp.graph.Graph;
 import sdp.graph.Node;
 
 /**
- * Read semantic dependency graphs from a file. This reader implements the
- * format described at
- * {@link http://alt.qcri.org/semeval2014/task8/index.php?id=dependency-formats}.
+ * Read semantic dependency graphs in the SDP 2015 format. The format is
+ * specified at
+ * {@link http://alt.qcri.org/semeval2015/task18/index.php?id=data-and-tools}.
  *
  * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
  */
-public class GraphReader2015 extends ParagraphReader {
+public class GraphReader2015 extends ParagraphReader implements GraphReader {
 
 	/**
 	 * Create a graph reader, using the default input-buffer size.
@@ -28,6 +29,7 @@ public class GraphReader2015 extends ParagraphReader {
 	 */
 	public GraphReader2015(Reader reader) {
 		super(reader);
+		readFirstLine();
 	}
 
 	/**
@@ -41,6 +43,7 @@ public class GraphReader2015 extends ParagraphReader {
 	 */
 	public GraphReader2015(File file) throws FileNotFoundException {
 		super(file);
+		readFirstLine();
 	}
 
 	/**
@@ -54,6 +57,19 @@ public class GraphReader2015 extends ParagraphReader {
 	 */
 	public GraphReader2015(String fileName) throws FileNotFoundException {
 		super(fileName);
+		readFirstLine();
+	}
+
+	/**
+	 * Reads the format identifier line.
+	 */
+	private void readFirstLine() {
+		try {
+			String line = super.readLine();
+			assert line.equals("#SDP 2015");
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	/**
@@ -63,6 +79,7 @@ public class GraphReader2015 extends ParagraphReader {
 	 * reached
 	 * @throws IOException if an I/O error occurs
 	 */
+	@Override
 	public Graph readGraph() throws IOException {
 		List<String> lines = super.readParagraph();
 		if (lines == null) {

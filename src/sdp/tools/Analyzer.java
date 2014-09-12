@@ -11,6 +11,7 @@ import sdp.graph.Edge;
 import sdp.graph.Graph;
 import sdp.graph.InspectedGraph;
 import sdp.graph.Node;
+import sdp.io.GraphReader;
 import sdp.io.GraphReader2014;
 
 /**
@@ -134,7 +135,7 @@ public class Analyzer {
 	public static void main(String[] args) throws Exception {
 		Analyzer analyzer = new Analyzer();
 		for (String arg : args) {
-			GraphReader2014 reader = new GraphReader2014(arg);
+			GraphReader reader = new GraphReader2014(arg);
 			Graph graph;
 			while ((graph = reader.readGraph()) != null) {
 				analyzer.update(graph);
