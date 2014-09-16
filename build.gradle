@@ -1,0 +1,19 @@
+apply plugin: 'java'
+
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+	mavenLocal()
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			groupId 'com.github.semantic-dependency-parsing'
+			artifactId 'toolkit'
+			version '2.0-SNAPSHOT'
+			from components.java
+		}
+	}
+}
