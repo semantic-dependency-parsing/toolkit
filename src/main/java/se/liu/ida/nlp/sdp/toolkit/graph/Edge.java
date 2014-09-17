@@ -1,7 +1,7 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package sdp.graph;
+package se.liu.ida.nlp.sdp.toolkit.graph;
 
 /**
  * An edge in a semantic dependency graph.

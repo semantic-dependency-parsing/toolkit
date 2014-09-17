@@ -1,7 +1,7 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package sdp.io;
+package se.liu.ida.nlp.sdp.toolkit.io;
 
 /**
  * Constants related to CoNLL-type data formats.

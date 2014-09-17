@@ -1,25 +1,25 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package sdp.io;
+package se.liu.ida.nlp.sdp.toolkit.io;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import sdp.graph.Edge;
-import sdp.graph.Graph;
-import sdp.graph.Node;
+import se.liu.ida.nlp.sdp.toolkit.graph.Edge;
+import se.liu.ida.nlp.sdp.toolkit.graph.Graph;
+import se.liu.ida.nlp.sdp.toolkit.graph.Node;
 
 /**
- * Write semantic dependency graphs in the SDP 2014 format. The format is
+ * Write semantic dependency graphs in the SDP 2015 format. The format is
  * specified at
- * {@link http://alt.qcri.org/semeval2014/task8/index.php?id=dependency-formats}.
+ * {@link http://alt.qcri.org/semeval2015/task18/index.php?id=data-and-tools}.
  *
  * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
  */
-public class GraphWriter2014 implements GraphWriter {
+public class GraphWriter2015 implements GraphWriter {
 
 	/**
 	 * The low-level writer.
@@ -31,8 +31,9 @@ public class GraphWriter2014 implements GraphWriter {
 	 *
 	 * @param writer the PrintWriter to be written to
 	 */
-	public GraphWriter2014(PrintWriter writer) {
+	public GraphWriter2015(PrintWriter writer) {
 		this.writer = writer;
+		writeFirstLine();
 	}
 
 	/**
@@ -43,7 +44,7 @@ public class GraphWriter2014 implements GraphWriter {
 	 * rather than a regular file, or for some other reason cannot be opened for
 	 * writing
 	 */
-	public GraphWriter2014(File file) throws IOException {
+	public GraphWriter2015(File file) throws IOException {
 		this(new PrintWriter(new BufferedWriter(new FileWriter(file))));
 	}
 
@@ -55,8 +56,15 @@ public class GraphWriter2014 implements GraphWriter {
 	 * rather than a regular file, or for some other reason cannot be opened for
 	 * writing
 	 */
-	public GraphWriter2014(String fileName) throws IOException {
+	public GraphWriter2015(String fileName) throws IOException {
 		this(new File(fileName));
+	}
+
+	/**
+	 * Writes the format identifier line.
+	 */
+	private void writeFirstLine() {
+		writer.println("#SDP 2015");
 	}
 
 	/**
@@ -96,6 +104,9 @@ public class GraphWriter2014 implements GraphWriter {
 				sb.append(Constants.COLUMN_SEPARATOR);
 				// Field 6: PRED
 				sb.append(node.isPred ? "+" : "-");
+				sb.append(Constants.COLUMN_SEPARATOR);
+				// Field 7: SENSE
+				sb.append(node.sense);
 
 				for (Node source : graph.getNodes().subList(1, nNodes)) {
 					if (source.isPred) {
@@ -121,7 +132,6 @@ public class GraphWriter2014 implements GraphWriter {
 	 *
 	 * @throws IOException if an I/O error occurs
 	 */
-	@Override
 	public void close() throws IOException {
 		writer.close();
 	}

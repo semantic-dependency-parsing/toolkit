@@ -1,7 +1,7 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package sdp.tools;
+package se.liu.ida.nlp.sdp.toolkit.tools;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,11 +9,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import sdp.graph.Edge;
-import sdp.graph.Graph;
-import sdp.graph.Node;
-import sdp.io.GraphReader;
-import sdp.io.GraphReader2014;
+import se.liu.ida.nlp.sdp.toolkit.graph.Edge;
+import se.liu.ida.nlp.sdp.toolkit.graph.Graph;
+import se.liu.ida.nlp.sdp.toolkit.graph.Node;
+import se.liu.ida.nlp.sdp.toolkit.io.GraphReader;
+import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2014;
 
 /**
  * Score a collection of dependency graphs relative to a gold standard.

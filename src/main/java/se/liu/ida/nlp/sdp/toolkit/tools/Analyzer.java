@@ -1,18 +1,18 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package sdp.tools;
+package se.liu.ida.nlp.sdp.toolkit.tools;
 
 import java.text.NumberFormat;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import sdp.graph.Edge;
-import sdp.graph.Graph;
-import sdp.graph.InspectedGraph;
-import sdp.graph.Node;
-import sdp.io.GraphReader;
-import sdp.io.GraphReader2015;
+import se.liu.ida.nlp.sdp.toolkit.graph.Edge;
+import se.liu.ida.nlp.sdp.toolkit.graph.Graph;
+import se.liu.ida.nlp.sdp.toolkit.graph.InspectedGraph;
+import se.liu.ida.nlp.sdp.toolkit.graph.Node;
+import se.liu.ida.nlp.sdp.toolkit.io.GraphReader;
+import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2015;
 
 /**
  * Print statistics about a collection of graphs.

@@ -1,13 +1,13 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package sdp.tools;
+package se.liu.ida.nlp.sdp.toolkit.tools;
 
-import sdp.graph.Graph;
-import sdp.io.GraphReader;
-import sdp.io.GraphReader2015;
-import sdp.io.GraphWriter;
-import sdp.io.GraphWriter2015;
+import se.liu.ida.nlp.sdp.toolkit.graph.Graph;
+import se.liu.ida.nlp.sdp.toolkit.io.GraphReader;
+import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2015;
+import se.liu.ida.nlp.sdp.toolkit.io.GraphWriter;
+import se.liu.ida.nlp.sdp.toolkit.io.GraphWriter2015;
 
 /**
  * Test the graph I/O.

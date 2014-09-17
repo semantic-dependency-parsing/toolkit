@@ -1,26 +1,25 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package sdp.io;
+package se.liu.ida.nlp.sdp.toolkit.io;
 
 import java.io.IOException;
-import sdp.graph.Graph;
+import se.liu.ida.nlp.sdp.toolkit.graph.Graph;
 
 /**
- * Read semantic dependency graphs from a file.
+ * Write semantic dependency graphs to a file.
  *
  * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
  */
-public interface GraphReader {
+public interface GraphWriter {
 
 	/**
-	 * Reads a single graph.
+	 * Writes a single graph.
 	 *
-	 * @return the graph read, or {@code null} if the end of the stream has been
-	 * reached
+	 * @param graph the graph to be written
 	 * @throws IOException if an I/O error occurs
 	 */
-	abstract public Graph readGraph() throws IOException;
+	abstract public void writeGraph(Graph graph) throws IOException;
 
 	/**
 	 * Closes the stream and releases any system resources associated with it.

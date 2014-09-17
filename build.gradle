@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = '1.8'
 
@@ -10,7 +11,7 @@ repositories {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			groupId 'com.github.semantic-dependency-parsing'
+			groupId 'se.liu.ida.nlp.sdp'
 			artifactId 'toolkit'
 			version '2.0-SNAPSHOT'
 			from components.java

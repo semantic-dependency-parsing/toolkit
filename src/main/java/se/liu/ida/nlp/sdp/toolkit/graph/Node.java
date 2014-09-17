@@ -1,7 +1,7 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package sdp.graph;
+package se.liu.ida.nlp.sdp.toolkit.graph;
 
 import java.util.LinkedList;
 import java.util.List;

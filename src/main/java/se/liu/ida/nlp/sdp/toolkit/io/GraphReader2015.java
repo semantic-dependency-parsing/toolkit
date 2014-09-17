@@ -1,7 +1,7 @@
 /*
  * See the file "LICENSE" for the full license governing this code.
  */
-package sdp.io;
+package se.liu.ida.nlp.sdp.toolkit.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,8 +10,8 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
-import sdp.graph.Graph;
-import sdp.graph.Node;
+import se.liu.ida.nlp.sdp.toolkit.graph.Graph;
+import se.liu.ida.nlp.sdp.toolkit.graph.Node;
 
 /**
  * Read semantic dependency graphs in the SDP 2015 format. The format is

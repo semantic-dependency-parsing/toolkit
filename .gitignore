@@ -1,4 +1,3 @@
-/target/
-/nbproject/
 /build/
-/dist/
+/.gradle/
+/.nb-gradle/
