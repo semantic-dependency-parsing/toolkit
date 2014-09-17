@@ -12,7 +12,7 @@ import se.liu.ida.nlp.sdp.toolkit.io.GraphWriter2015;
 /**
  * Test the graph I/O.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class IOTest {
 

@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * A semantic dependency graph.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class Graph {
 

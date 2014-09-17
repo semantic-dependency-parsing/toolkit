@@ -6,7 +6,7 @@ package se.liu.ida.nlp.sdp.toolkit.graph;
 /**
  * Depth-first graph search.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class DFS {
 

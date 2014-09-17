@@ -12,7 +12,7 @@ import se.liu.ida.nlp.sdp.toolkit.io.GraphWriter2014;
 /**
  * Splits the SDP training data into training and development.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class Splitter {
 

@@ -11,7 +11,7 @@ import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2014;
 /**
  * Print some basic statistics about a collection of graphs.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class BasicAnalyzer {
 

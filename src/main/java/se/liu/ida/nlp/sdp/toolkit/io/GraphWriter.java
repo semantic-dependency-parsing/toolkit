@@ -9,7 +9,7 @@ import se.liu.ida.nlp.sdp.toolkit.graph.Graph;
 /**
  * Write semantic dependency graphs to a file.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public interface GraphWriter {
 

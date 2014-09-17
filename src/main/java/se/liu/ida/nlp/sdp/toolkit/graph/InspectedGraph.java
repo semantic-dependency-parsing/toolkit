@@ -6,7 +6,7 @@ package se.liu.ida.nlp.sdp.toolkit.graph;
 /**
  * Inspect graph-theoretic properties.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class InspectedGraph {
 

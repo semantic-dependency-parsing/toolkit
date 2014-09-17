@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Reads paragraphs separated by blank lines from a character-input stream.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class ParagraphReader extends LineNumberReader {
 

@@ -18,7 +18,7 @@ import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2014;
 
 /**
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class PairedBootstrap {
 

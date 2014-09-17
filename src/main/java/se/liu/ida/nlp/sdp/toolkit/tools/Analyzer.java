@@ -17,7 +17,7 @@ import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2015;
 /**
  * Print statistics about a collection of graphs.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class Analyzer {
 

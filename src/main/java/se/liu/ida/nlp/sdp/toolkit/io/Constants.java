@@ -6,7 +6,7 @@ package se.liu.ida.nlp.sdp.toolkit.io;
 /**
  * Constants related to CoNLL-type data formats.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class Constants {
 

@@ -9,7 +9,7 @@ import se.liu.ida.nlp.sdp.toolkit.graph.Graph;
 /**
  * Read semantic dependency graphs from a file.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public interface GraphReader {
 

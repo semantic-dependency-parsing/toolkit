@@ -18,7 +18,7 @@ import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2014;
 /**
  * Score a collection of dependency graphs relative to a gold standard.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class Scorer {
 

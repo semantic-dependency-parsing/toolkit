@@ -6,7 +6,7 @@ package se.liu.ida.nlp.sdp.toolkit.graph;
 /**
  * An edge in a semantic dependency graph.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class Edge implements Comparable<Edge> {
 

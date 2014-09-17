@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * A node in a semantic dependency graph.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class Node {
 

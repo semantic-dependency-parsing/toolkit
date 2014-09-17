@@ -14,10 +14,10 @@ import se.liu.ida.nlp.sdp.toolkit.graph.Node;
 
 /**
  * Read semantic dependency graphs in the SDP 2014 format. The format is
- * specified at
- * {@link http://alt.qcri.org/semeval2014/task8/index.php?id=dependency-formats}.
+ * specified
+ * <a href="http://alt.qcri.org/semeval2014/task8/index.php?id=dependency-formats">here</a>.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class GraphReader2014 extends ParagraphReader implements GraphReader {
 

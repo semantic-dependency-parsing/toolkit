@@ -15,10 +15,10 @@ import se.liu.ida.nlp.sdp.toolkit.graph.Node;
 
 /**
  * Read semantic dependency graphs in the SDP 2015 format. The format is
- * specified at
- * {@link http://alt.qcri.org/semeval2015/task18/index.php?id=data-and-tools}.
+ * specified
+ * <a href="http://alt.qcri.org/semeval2015/task18/index.php?id=data-and-tools">here</a>.
  *
- * @author Marco Kuhlmann <marco.kuhlmann@liu.se>
+ * @author Marco Kuhlmann
  */
 public class GraphReader2015 extends ParagraphReader implements GraphReader {
 
