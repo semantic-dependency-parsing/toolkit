@@ -13,11 +13,16 @@ The project is currently only available via Git.
 
 ## Building
 
-After checking out the project from the repository, you should be able to build it using `ant`. (You need at least version 1.8, and your Java version should be at least 1.6.)
+After checking out the project from the repository, you should be able to build it using [Gradle](http://www.gradle.org/).
 
-	$ ant
+	$ cd toolkit
+	$ gradle build
 
-This will create a file `dist/sdp.jar` with the compiled classes. The jar can then be added to your classpath, whereby you will be able to use the provided classes in your own project. To see what is there, consult the Javadoc documentation in `dist/javadoc`.
+This will create a file `build/libs/sdp.jar` with the compiled classes. The jar can then be added to your classpath, whereby you will be able to use the provided classes in your own project. To see what is there, build the documentation:
+
+	$ gradle javadoc
+
+The entry page for the documentation is `build/docs/javadoc/index.html`.
 
 ## Command-line tools
 
