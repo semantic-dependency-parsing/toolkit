@@ -14,7 +14,7 @@ import se.liu.ida.nlp.sdp.toolkit.graph.Edge;
 import se.liu.ida.nlp.sdp.toolkit.graph.Graph;
 import se.liu.ida.nlp.sdp.toolkit.graph.Node;
 import se.liu.ida.nlp.sdp.toolkit.io.GraphReader;
-import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2014;
+import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2015;
 
 /**
  *
@@ -69,7 +69,7 @@ public class PairedBootstrap {
 
 	private static List<Graph> readGraphs(String fileName) throws FileNotFoundException, IOException {
 		List<Graph> graphs = new ArrayList<Graph>();
-		GraphReader reader = new GraphReader2014(fileName);
+		GraphReader reader = new GraphReader2015(fileName);
 		Graph graph;
 		while ((graph = reader.readGraph()) != null) {
 			graphs.add(graph);

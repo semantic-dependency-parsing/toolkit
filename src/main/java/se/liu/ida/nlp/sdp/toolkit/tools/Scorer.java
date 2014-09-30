@@ -13,7 +13,7 @@ import se.liu.ida.nlp.sdp.toolkit.graph.Edge;
 import se.liu.ida.nlp.sdp.toolkit.graph.Graph;
 import se.liu.ida.nlp.sdp.toolkit.graph.Node;
 import se.liu.ida.nlp.sdp.toolkit.io.GraphReader;
-import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2014;
+import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2015;
 
 /**
  * Score a collection of dependency graphs relative to a gold standard.
@@ -262,8 +262,8 @@ public class Scorer {
 	 */
 	private static List<GraphPair> readGraphs(String goldStandardFile, String systemOutputFile) throws Exception {
 		List<GraphPair> graphPairs = new LinkedList<GraphPair>();
-		GraphReader goldStandardReader = new GraphReader2014(goldStandardFile);
-		GraphReader systemOutputReader = new GraphReader2014(systemOutputFile);
+		GraphReader goldStandardReader = new GraphReader2015(goldStandardFile);
+		GraphReader systemOutputReader = new GraphReader2015(systemOutputFile);
 		Graph goldStandard;
 		Graph systemOutput;
 		while ((goldStandard = goldStandardReader.readGraph()) != null) {

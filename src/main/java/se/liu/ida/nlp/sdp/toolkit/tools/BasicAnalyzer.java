@@ -6,7 +6,7 @@ package se.liu.ida.nlp.sdp.toolkit.tools;
 import se.liu.ida.nlp.sdp.toolkit.graph.Graph;
 import se.liu.ida.nlp.sdp.toolkit.graph.InspectedGraph;
 import se.liu.ida.nlp.sdp.toolkit.io.GraphReader;
-import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2014;
+import se.liu.ida.nlp.sdp.toolkit.io.GraphReader2015;
 
 /**
  * Print some basic statistics about a collection of graphs.
@@ -17,7 +17,7 @@ public class BasicAnalyzer {
 
     public static void main(String[] args) throws Exception {
         for (String arg : args) {
-            GraphReader reader = new GraphReader2014(arg);
+            GraphReader reader = new GraphReader2015(arg);
             int nGraphs = 0;
             int nTokens = 0;
             int nCyclic = 0;
