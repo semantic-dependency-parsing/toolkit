@@ -3,6 +3,11 @@
  */
 package se.liu.ida.nlp.sdp.toolkit.tools;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -31,6 +36,11 @@ public class Scorer {
 	 * The label used for virtual edges.
 	 */
 	private static final String VIRTUAL = "-VIRTUAL-";
+
+	/**
+	 * The sense used for core predications.
+	 */
+	private static final String NO_SENSE = "-NOSENSE-";
 
 	/**
 	 * A flag indicating whether to include labels when scoring graphs.
@@ -73,6 +83,13 @@ public class Scorer {
 	 */
 	private int nExactMatches;
 
+	private final Set<SemanticFrame> semanticFramesInGoldStandard;
+	private final Set<SemanticFrame> semanticFramesInSystemOutput;
+	private final Set<SemanticFrame> corePredicationsInGoldStandard;
+	private final Set<SemanticFrame> corePredicationsInSystemOutput;
+
+	private final Predicate labelPredicate;
+
 	/**
 	 * Construct a new scorer.
 	 *
@@ -85,20 +102,25 @@ public class Scorer {
 	 * @param treatEdgesAsUndirected flag indicating whether the scorer should
 	 * treat edges as undirected
 	 */
-	public Scorer(boolean includeLabels, boolean includeTopNodes, boolean includePunctuation, boolean treatEdgesAsUndirected) {
+	public Scorer(boolean includeLabels, boolean includeTopNodes, boolean includePunctuation, boolean treatEdgesAsUndirected, Predicate labelPredicate) {
 		this.includeLabels = includeLabels;
 		this.includeTopNodes = includeTopNodes;
 		this.edgesInGoldStandard = new HashSet<ScorerEdge>();
 		this.edgesInSystemOutput = new HashSet<ScorerEdge>();
 		this.includePunctuation = includePunctuation;
 		this.treatEdgesAsUndirected = treatEdgesAsUndirected;
+		this.semanticFramesInGoldStandard = new HashSet<>();
+		this.semanticFramesInSystemOutput = new HashSet<>();
+		this.corePredicationsInGoldStandard = new HashSet<>();
+		this.corePredicationsInSystemOutput = new HashSet<>();
+		this.labelPredicate = labelPredicate;
 	}
 
 	/**
 	 * Construct a new scorer.
 	 */
 	public Scorer() {
-		this(true, true, true, false);
+		this(true, true, true, false, new TruePredicate());
 	}
 
 	/**
@@ -120,6 +142,18 @@ public class Scorer {
 
 		edgesInGoldStandard.addAll(edgesG);
 		edgesInSystemOutput.addAll(edgesS);
+
+		Set<SemanticFrame> semanticFramesG = getSemanticFrames(goldStandard);
+		Set<SemanticFrame> semanticFramesS = getSemanticFrames(systemOutput);
+
+		semanticFramesInGoldStandard.addAll(semanticFramesG);
+		semanticFramesInSystemOutput.addAll(semanticFramesS);
+
+		Set<SemanticFrame> corePredicationsG = getSemanticFrames(goldStandard);
+		Set<SemanticFrame> corePredicationsS = getSemanticFrames(systemOutput);
+
+		corePredicationsInGoldStandard.addAll(corePredicationsG);
+		corePredicationsInSystemOutput.addAll(corePredicationsS);
 	}
 
 	/**
@@ -254,21 +288,213 @@ public class Scorer {
 	}
 
 	/**
+	 * Returns the semantic frames contained in the specified graph.
+	 *
+	 * @param graph a dependency graph
+	 * @return the semantic frames contained in the specified graph
+	 */
+	private Set<SemanticFrame> getSemanticFrames(Graph graph) {
+		Set<SemanticFrame> semanticFrames = new HashSet<>();
+		for (Node node : graph.getNodes()) {
+			if (node.isPred) {
+				Set<ScorerEdge> outgoingEdges = new HashSet<>();
+				for (Edge edge : node.getOutgoingEdges()) {
+					if (labelPredicate.applies(node.pos, edge.label)) {
+						ScorerEdge scorerEdge = new ScorerEdge(nGraphs, edge.source, edge.target, edge.label);
+						outgoingEdges.add(scorerEdge);
+					}
+				}
+				SemanticFrame frame = new SemanticFrame(nGraphs, node.id, node.sense, outgoingEdges);
+				semanticFrames.add(frame);
+			}
+		}
+		return semanticFrames;
+	}
+
+	/**
+	 * Returns the number of semantic frames in the gold standard.
+	 *
+	 * @return the number of semantic frames in the gold standard
+	 */
+	public int getNSemanticFramesInGoldStandard() {
+		return semanticFramesInGoldStandard.size();
+	}
+
+	/**
+	 * Returns the number of semantic frames in the system output.
+	 *
+	 * @return the number of semantic frames in the system output
+	 */
+	public int getNSemanticFramesInSystemOutput() {
+		return semanticFramesInSystemOutput.size();
+	}
+
+	/**
+	 * Returns the semantic frames precision computed by this scorer.
+	 *
+	 * @return the semantic frames precision computed by this scorer
+	 */
+	public double getSemanticFramesPrecision() {
+		return (double) getNSemanticFramesInCommon() / (double) getNSemanticFramesInSystemOutput();
+	}
+
+	/**
+	 * Returns the semantic frames recall computed by this scorer.
+	 *
+	 * @return the semantic frames recall computed by this scorer
+	 */
+	public double getSemanticFramesRecall() {
+		return (double) getNSemanticFramesInCommon() / (double) getNSemanticFramesInGoldStandard();
+	}
+
+	/**
+	 * Returns the semantic frames that occur both in the gold standard and in
+	 * the system output.
+	 *
+	 * @return the semantic frames that occur both in the gold standard and in
+	 * the system output
+	 */
+	private Set<SemanticFrame> getSemanticFramesInCommon() {
+		Set<SemanticFrame> intersection = new HashSet<>(semanticFramesInGoldStandard);
+		intersection.retainAll(semanticFramesInSystemOutput);
+		return intersection;
+	}
+
+	/**
+	 * Returns the number of semantic frames that occur both in the gold
+	 * standard and in the system output.
+	 *
+	 * @return the number of semantic frames that occur both in the gold
+	 * standard and in the system output
+	 */
+	public int getNSemanticFramesInCommon() {
+		return getSemanticFramesInCommon().size();
+	}
+
+	/**
+	 * Returns the semantic frames F1-score computed by this scorer.
+	 *
+	 * @return the semantic frames F1-score computed by this scorer
+	 */
+	public double getSemanticFramesF1() {
+		double p = getSemanticFramesPrecision();
+		double r = getSemanticFramesRecall();
+		return 2.0 * p * r / (p + r);
+	}
+
+	/**
+	 * Returns the core predications contained in the specified graph.
+	 *
+	 * @param graph a dependency graph
+	 * @return the core predications contained in the specified graph
+	 */
+	private Set<SemanticFrame> getCorePredications(Graph graph) {
+		Set<SemanticFrame> semanticFrames = new HashSet<>();
+		for (Node node : graph.getNodes()) {
+			if (node.isPred) {
+				Set<ScorerEdge> outgoingEdges = new HashSet<>();
+				for (Edge edge : node.getOutgoingEdges()) {
+					if (labelPredicate.applies(node.pos, edge.label)) {
+						ScorerEdge scorerEdge = new ScorerEdge(nGraphs, edge.source, edge.target, edge.label);
+						outgoingEdges.add(scorerEdge);
+					}
+				}
+				SemanticFrame frame = new SemanticFrame(nGraphs, node.id, NO_SENSE, outgoingEdges);
+				semanticFrames.add(frame);
+			}
+		}
+		return semanticFrames;
+	}
+
+	/**
+	 * Returns the number of core predications in the gold standard.
+	 *
+	 * @return the number of core predications in the gold standard
+	 */
+	public int getNCorePredicationsInGoldStandard() {
+		return corePredicationsInGoldStandard.size();
+	}
+
+	/**
+	 * Returns the number of core predications in the system output.
+	 *
+	 * @return the number of core predications in the system output
+	 */
+	public int getNCorePredicationsInSystemOutput() {
+		return corePredicationsInSystemOutput.size();
+	}
+
+	/**
+	 * Returns the core predications precision computed by this scorer.
+	 *
+	 * @return the core predications precision computed by this scorer
+	 */
+	public double getCorePredicationsPrecision() {
+		return (double) getNCorePredicationsInCommon() / (double) getNCorePredicationsInSystemOutput();
+	}
+
+	/**
+	 * Returns the core predications recall computed by this scorer.
+	 *
+	 * @return the core predications recall computed by this scorer
+	 */
+	public double getCorePredicationsRecall() {
+		return (double) getNCorePredicationsInCommon() / (double) getNCorePredicationsInGoldStandard();
+	}
+
+	/**
+	 * Returns the core predications that occur both in the gold standard and in
+	 * the system output.
+	 *
+	 * @return the core predications that occur both in the gold standard and in
+	 * the system output
+	 */
+	private Set<SemanticFrame> getCorePredicationsInCommon() {
+		Set<SemanticFrame> intersection = new HashSet<>(corePredicationsInGoldStandard);
+		intersection.retainAll(corePredicationsInSystemOutput);
+		return intersection;
+	}
+
+	/**
+	 * Returns the number of core predications that occur both in the gold
+	 * standard and in the system output.
+	 *
+	 * @return the number of core predications that occur both in the gold
+	 * standard and in the system output
+	 */
+	public int getNCorePredicationsInCommon() {
+		return getCorePredicationsInCommon().size();
+	}
+
+	/**
+	 * Returns the core predications F1-score computed by this scorer.
+	 *
+	 * @return the core predications F1-score computed by this scorer
+	 */
+	public double getCorePredicationsF1() {
+		double p = getCorePredicationsPrecision();
+		double r = getCorePredicationsRecall();
+		return 2.0 * p * r / (p + r);
+	}
+
+	/**
 	 * Read graphs from the specified files.
 	 *
 	 * @param goldStandardFile the file containing the gold standard graphs
 	 * @param systemOutputFile the file containing the system output graphs
 	 * @throws Exception if an I/O error occurs
 	 */
-	private static List<GraphPair> readGraphs(String goldStandardFile, String systemOutputFile) throws Exception {
+	private static List<GraphPair> readGraphs(String goldStandardFile, String systemOutputFile, int max) throws Exception {
 		List<GraphPair> graphPairs = new LinkedList<GraphPair>();
 		GraphReader goldStandardReader = new GraphReader2015(goldStandardFile);
 		GraphReader systemOutputReader = new GraphReader2015(systemOutputFile);
 		Graph goldStandard;
 		Graph systemOutput;
-		while ((goldStandard = goldStandardReader.readGraph()) != null) {
+		int nGraphs = 0;
+		while ((goldStandard = goldStandardReader.readGraph()) != null && (max < 0 || nGraphs < max)) {
 			systemOutput = systemOutputReader.readGraph();
 			graphPairs.add(new GraphPair(goldStandard, systemOutput));
+			nGraphs++;
 		}
 		assert systemOutputReader.readGraph() == null;
 		goldStandardReader.close();
@@ -294,9 +520,9 @@ public class Scorer {
 	 * @param includeTopNodes whether the scoring should include top nodes
 	 * @param graphPairs a list of reference-candidate pairs
 	 */
-	private static void score(boolean includeTopNodes, boolean includePunctuation, boolean treatEdgesAsUndirected, List<GraphPair> graphPairs) {
-		Scorer scorerL = new Scorer(true, includeTopNodes, includePunctuation, treatEdgesAsUndirected);
-		Scorer scorerU = new Scorer(false, includeTopNodes, includePunctuation, treatEdgesAsUndirected);
+	private static void score(boolean includeTopNodes, boolean includePunctuation, boolean treatEdgesAsUndirected, List<GraphPair> graphPairs, Predicate labelPredicate) {
+		Scorer scorerL = new Scorer(true, includeTopNodes, includePunctuation, treatEdgesAsUndirected, labelPredicate);
+		Scorer scorerU = new Scorer(false, includeTopNodes, includePunctuation, treatEdgesAsUndirected, labelPredicate);
 
 		score(scorerL, graphPairs);
 		score(scorerU, graphPairs);
@@ -346,6 +572,20 @@ public class Scorer {
 		System.err.format("UR: %f%n", scorerU.getRecall());
 		System.err.format("UF: %f%n", scorerU.getF1());
 		System.err.format("UM: %f%n", scorerU.getExactMatch());
+		System.err.println();
+
+		System.err.println("### Semantic frames");
+		System.err.println();
+		System.err.format("SFP: %f%n", scorerL.getSemanticFramesPrecision());
+		System.err.format("SFR: %f%n", scorerL.getSemanticFramesRecall());
+		System.err.format("SFF: %f%n", scorerL.getSemanticFramesF1());
+		System.err.println();
+		
+		System.err.println("### Core predications");
+		System.err.println();
+		System.err.format("CPP: %f%n", scorerL.getCorePredicationsPrecision());
+		System.err.format("CPR: %f%n", scorerL.getCorePredicationsRecall());
+		System.err.format("CPF: %f%n", scorerL.getCorePredicationsF1());
 	}
 
 	/**
@@ -358,6 +598,8 @@ public class Scorer {
 	public static void main(String[] args) throws Exception {
 		boolean includePunctuation = true;
 		boolean treatEdgesAsUndirected = false;
+		Predicate labelPredicate = new TruePredicate();
+		int graphsToRead = -1;
 		for (String arg : args) {
 			if (arg.equals("excludePunctuation")) {
 				System.err.println("Will exclude punctuation.");
@@ -366,6 +608,30 @@ public class Scorer {
 			if (arg.equals("treatEdgesAsUndirected")) {
 				System.err.println("Will treat edges as undirected.");
 				treatEdgesAsUndirected = true;
+			}
+			if (arg.startsWith("corePredicates=")) {
+				String fileName = arg.substring(15);
+				System.err.format("Reading core predicates from %s%n", fileName);
+				labelPredicate = new ListPredicate(new File(fileName));
+			}
+			if (arg.startsWith("max=")) {
+				graphsToRead = Integer.parseInt(arg.substring(4));
+				System.err.format("Will read at most %d graphs.%n", graphsToRead);
+			}
+			if (arg.startsWith("representation=")) {
+				String representation = arg.substring(15).toLowerCase();
+				if (representation.equals("dm")) {
+					System.err.println("Representation type: DM");
+					labelPredicate = new DMPredicate();
+				}
+				if (representation.equals("pas")) {
+					System.err.println("Representation type: PAS");
+					labelPredicate = new PASPredicate();
+				}
+				if (representation.equals("psd")) {
+					System.err.println("Representation type: PSD");
+					labelPredicate = new PSDPredicate();
+				}
 			}
 		}
 
@@ -376,16 +642,16 @@ public class Scorer {
 		System.err.format("System output file: %s%n", args[1]);
 		System.err.println();
 
-		List<GraphPair> graphPairs = readGraphs(args[0], args[1]);
+		List<GraphPair> graphPairs = readGraphs(args[0], args[1], graphsToRead);
 
 		System.err.println("## Scores including virtual dependencies to top nodes");
 		System.err.println();
-		score(true, includePunctuation, treatEdgesAsUndirected, graphPairs);
+		score(true, includePunctuation, treatEdgesAsUndirected, graphPairs, labelPredicate);
 		System.err.println();
 
 		System.err.println("## Scores excluding virtual dependencies to top nodes");
 		System.err.println();
-		score(false, includePunctuation, treatEdgesAsUndirected, graphPairs);
+		score(false, includePunctuation, treatEdgesAsUndirected, graphPairs, labelPredicate);
 	}
 
 	private static class GraphPair {
@@ -396,6 +662,103 @@ public class Scorer {
 		public GraphPair(Graph goldStandard, Graph systemOutput) {
 			this.goldStandard = goldStandard;
 			this.systemOutput = systemOutput;
+		}
+	}
+
+	private interface Predicate {
+
+		abstract public boolean applies(String pos, String label);
+	}
+
+	private static class TruePredicate implements Predicate {
+
+		@Override
+		public boolean applies(String pos, String label) {
+			return true;
+		}
+	}
+
+	abstract private static class BasePredicate implements Predicate {
+
+		public boolean isRelevantPartOfSpeech(String pos) {
+			return pos.equals("VB");
+		}
+
+		@Override
+		abstract public boolean applies(String pos, String label);
+	}
+
+	private static class ListPredicate implements Predicate {
+
+		private final Set<String> labels;
+
+		public ListPredicate(File file) {
+			this.labels = new HashSet<>();
+			try {
+				BufferedReader reader = new BufferedReader(new FileReader(file));
+				String line;
+				while ((line = reader.readLine()) != null) {
+					labels.add(line.trim());
+				}
+			} catch (FileNotFoundException e) {
+				System.err.println("File not found.");
+				System.exit(1);
+			} catch (IOException e) {
+				System.err.println("I/O exception.");
+				System.exit(1);
+			}
+		}
+
+		@Override
+		public boolean applies(String pos, String label) {
+			return labels.contains(label);
+		}
+	}
+
+	private static class DMPredicate extends BasePredicate {
+
+		@Override
+		public boolean applies(String pos, String label) {
+			return super.isRelevantPartOfSpeech(pos);
+		}
+	}
+
+	private static class PASPredicate extends BasePredicate {
+
+		private final Set<String> corePredicates;
+
+		public PASPredicate() {
+			this.corePredicates = new HashSet<>();
+			corePredicates.add("verb_arg1");
+			corePredicates.add("verb_arg12");
+			corePredicates.add("verb_arg123");
+			corePredicates.add("verb_arg1234");
+			corePredicates.add("verb_mod_arg1");
+			corePredicates.add("verb_mod_arg12");
+			corePredicates.add("verb_mod_arg123");
+			corePredicates.add("verb_mod_arg1234");
+			corePredicates.add("adj_arg1");
+			corePredicates.add("adj_arg12");
+			corePredicates.add("adj_mod_arg1");
+			corePredicates.add("adj_mod_arg12");
+			corePredicates.add("coord_arg12");
+			corePredicates.add("prep_arg12");
+			corePredicates.add("prep_arg123");
+			corePredicates.add("prep_mod_arg12");
+			corePredicates.add("prep_mod_arg123");
+		}
+
+		@Override
+		public boolean applies(String pos, String label) {
+			return super.isRelevantPartOfSpeech(pos) && corePredicates.contains(label);
+		}
+	}
+
+	public static class PSDPredicate extends BasePredicate {
+
+		@Override
+		public boolean applies(String pos, String label) {
+			return super.isRelevantPartOfSpeech(pos) && label.endsWith("-arg");
 		}
 	}
 
@@ -495,6 +858,55 @@ public class Scorer {
 				return false;
 			}
 			if ((this.label == null) ? (other.label != null) : !this.label.equals(other.label)) {
+				return false;
+			}
+			return true;
+		}
+	}
+
+	private static class SemanticFrame {
+
+		final int graphId;
+		final int node;
+		final String sense;
+		final Set<ScorerEdge> outgoingEdges;
+
+		public SemanticFrame(int graphId, int node, String sense, Set<ScorerEdge> outgoingEdges) {
+			this.graphId = graphId;
+			this.node = node;
+			this.sense = sense;
+			this.outgoingEdges = outgoingEdges;
+		}
+
+		@Override
+		public int hashCode() {
+			int hash = 3;
+			hash = 53 * hash + this.graphId;
+			hash = 53 * hash + this.node;
+			hash = 53 * hash + (this.sense != null ? this.sense.hashCode() : 0);
+			hash = 53 * hash + (this.outgoingEdges != null ? this.outgoingEdges.hashCode() : 0);
+			return hash;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			final SemanticFrame other = (SemanticFrame) obj;
+			if (this.graphId != other.graphId) {
+				return false;
+			}
+			if (this.node != other.node) {
+				return false;
+			}
+			if ((this.sense == null) ? (other.sense != null) : !this.sense.equals(other.sense)) {
+				return false;
+			}
+			if ((this.outgoingEdges == null) ? (other.outgoingEdges != null) : !this.outgoingEdges.equals(other.outgoingEdges)) {
 				return false;
 			}
 			return true;

@@ -28,9 +28,9 @@ The entry page for the documentation is `build/docs/javadoc/index.html`.
 
 Some of the tools implemented in the project can be called from the command line. For this there is a convenience shell script called `run.sh`, which you call with the name of the tool and any command-line arguments. The most revelant example is the `Scorer` tool, which is run as follows:
 
-	$ sh run.sh Scorer gold.sdp system.sdp
+	$ sh run.sh Scorer gold.sdp system.sdp representation=DM
 
-This will evaluate the parser output in the file `system.sdp` based on the gold-standard analyses in the file `gold.sdp`. The evaluation metrics used are defined on the [Evaluation page](http://alt.qcri.org/semeval2014/task8/index.php?id=evaluation).
+This will evaluate the parser output in the file `system.sdp` based on the gold-standard analyses in the file `gold.sdp` based on the assumption that the data is given in the `DM` representation; other possible representations are `PAS` and `PSD`. The evaluation metrics used are defined on the [Evaluation page](http://alt.qcri.org/semeval2015/task18/index.php?id=evaluation).
 
 Abbreviations:
 
@@ -43,3 +43,11 @@ Abbreviations:
 	UR: unlabeled recall
 	UF: unlabeled F1
 	UM: unlabeled exact match
+	
+	SFP: precision with respect to semantic frames
+	SFR: recall with respect to semantic frames
+	SFF: F1 with respect to semantic frames
+	
+	CPP: precision with respect to complete predications
+	CPR: recall with respect to complete predications
+	CPF: F1 with respect to complete predications
