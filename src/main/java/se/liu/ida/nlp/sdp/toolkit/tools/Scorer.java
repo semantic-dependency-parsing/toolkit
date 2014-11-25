@@ -88,7 +88,7 @@ public class Scorer {
 	private final Set<SemanticFrame> corePredicationsInGoldStandard;
 	private final Set<SemanticFrame> corePredicationsInSystemOutput;
 
-	private final Predicate labelPredicate;
+	private final ArgumentFilter labelPredicate;
 
 	/**
 	 * Construct a new scorer.
@@ -102,7 +102,7 @@ public class Scorer {
 	 * @param treatEdgesAsUndirected flag indicating whether the scorer should
 	 * treat edges as undirected
 	 */
-	public Scorer(boolean includeLabels, boolean includeTopNodes, boolean includePunctuation, boolean treatEdgesAsUndirected, Predicate labelPredicate) {
+	public Scorer(boolean includeLabels, boolean includeTopNodes, boolean includePunctuation, boolean treatEdgesAsUndirected, ArgumentFilter labelPredicate) {
 		this.includeLabels = includeLabels;
 		this.includeTopNodes = includeTopNodes;
 		this.edgesInGoldStandard = new HashSet<ScorerEdge>();
@@ -120,7 +120,7 @@ public class Scorer {
 	 * Construct a new scorer.
 	 */
 	public Scorer() {
-		this(true, true, true, false, new TruePredicate());
+		this(true, true, true, false, new TrueFilter());
 	}
 
 	/**
@@ -288,6 +288,18 @@ public class Scorer {
 	}
 
 	/**
+	 * Tests whether the specified node represents a scorable predicate.
+	 * Currently only predicates corresponding to verbs are scored.
+	 *
+	 * @param node a node in a dependency graph
+	 * @return {@code true} if the specified node represents a scorable
+	 * predicate
+	 */
+	private boolean representsScorablePredicate(Node node) {
+		return node.isPred && node.pos.equals("VB");
+	}
+
+	/**
 	 * Returns the semantic frames contained in the specified graph.
 	 *
 	 * @param graph a dependency graph
@@ -296,10 +308,10 @@ public class Scorer {
 	private Set<SemanticFrame> getSemanticFrames(Graph graph) {
 		Set<SemanticFrame> semanticFrames = new HashSet<>();
 		for (Node node : graph.getNodes()) {
-			if (node.isPred) {
+			if (representsScorablePredicate(node)) {
 				Set<ScorerEdge> outgoingEdges = new HashSet<>();
 				for (Edge edge : node.getOutgoingEdges()) {
-					if (labelPredicate.applies(node.pos, edge.label)) {
+					if (labelPredicate.applies(edge.label)) {
 						ScorerEdge scorerEdge = new ScorerEdge(nGraphs, edge.source, edge.target, edge.label);
 						outgoingEdges.add(scorerEdge);
 					}
@@ -391,10 +403,10 @@ public class Scorer {
 	private Set<SemanticFrame> getCorePredications(Graph graph) {
 		Set<SemanticFrame> semanticFrames = new HashSet<>();
 		for (Node node : graph.getNodes()) {
-			if (node.isPred) {
+			if (representsScorablePredicate(node)) {
 				Set<ScorerEdge> outgoingEdges = new HashSet<>();
 				for (Edge edge : node.getOutgoingEdges()) {
-					if (labelPredicate.applies(node.pos, edge.label)) {
+					if (labelPredicate.applies(edge.label)) {
 						ScorerEdge scorerEdge = new ScorerEdge(nGraphs, edge.source, edge.target, edge.label);
 						outgoingEdges.add(scorerEdge);
 					}
@@ -520,7 +532,7 @@ public class Scorer {
 	 * @param includeTopNodes whether the scoring should include top nodes
 	 * @param graphPairs a list of reference-candidate pairs
 	 */
-	private static void score(boolean includeTopNodes, boolean includePunctuation, boolean treatEdgesAsUndirected, List<GraphPair> graphPairs, Predicate labelPredicate) {
+	private static void score(boolean includeTopNodes, boolean includePunctuation, boolean treatEdgesAsUndirected, List<GraphPair> graphPairs, ArgumentFilter labelPredicate) {
 		Scorer scorerL = new Scorer(true, includeTopNodes, includePunctuation, treatEdgesAsUndirected, labelPredicate);
 		Scorer scorerU = new Scorer(false, includeTopNodes, includePunctuation, treatEdgesAsUndirected, labelPredicate);
 
@@ -574,18 +586,24 @@ public class Scorer {
 		System.err.format("UM: %f%n", scorerU.getExactMatch());
 		System.err.println();
 
-		System.err.println("### Semantic frames");
-		System.err.println();
-		System.err.format("SFP: %f%n", scorerL.getSemanticFramesPrecision());
-		System.err.format("SFR: %f%n", scorerL.getSemanticFramesRecall());
-		System.err.format("SFF: %f%n", scorerL.getSemanticFramesF1());
-		System.err.println();
-		
 		System.err.println("### Core predications");
+		System.err.println();
+		System.err.format("Number of core predications in gold standard: %d%n", scorerL.getNCorePredicationsInGoldStandard());
+		System.err.format("Number of core predications in system output: %d%n", scorerL.getNCorePredicationsInSystemOutput());
 		System.err.println();
 		System.err.format("CPP: %f%n", scorerL.getCorePredicationsPrecision());
 		System.err.format("CPR: %f%n", scorerL.getCorePredicationsRecall());
 		System.err.format("CPF: %f%n", scorerL.getCorePredicationsF1());
+		System.err.println();
+
+		System.err.println("### Semantic frames");
+		System.err.println();
+		System.err.format("Number of semantic frames in gold standard: %d%n", scorerL.getNSemanticFramesInGoldStandard());
+		System.err.format("Number of semantic frames in system output: %d%n", scorerL.getNSemanticFramesInSystemOutput());
+		System.err.println();
+		System.err.format("SFP: %f%n", scorerL.getSemanticFramesPrecision());
+		System.err.format("SFR: %f%n", scorerL.getSemanticFramesRecall());
+		System.err.format("SFF: %f%n", scorerL.getSemanticFramesF1());
 	}
 
 	/**
@@ -598,7 +616,7 @@ public class Scorer {
 	public static void main(String[] args) throws Exception {
 		boolean includePunctuation = true;
 		boolean treatEdgesAsUndirected = false;
-		Predicate labelPredicate = new TruePredicate();
+		ArgumentFilter labelPredicate = new TrueFilter();
 		int graphsToRead = -1;
 		for (String arg : args) {
 			if (arg.equals("excludePunctuation")) {
@@ -612,7 +630,7 @@ public class Scorer {
 			if (arg.startsWith("corePredicates=")) {
 				String fileName = arg.substring(15);
 				System.err.format("Reading core predicates from %s%n", fileName);
-				labelPredicate = new ListPredicate(new File(fileName));
+				labelPredicate = new ListFilter(new File(fileName));
 			}
 			if (arg.startsWith("max=")) {
 				graphsToRead = Integer.parseInt(arg.substring(4));
@@ -622,11 +640,11 @@ public class Scorer {
 				String representation = arg.substring(15).toLowerCase();
 				if (representation.equals("dm")) {
 					System.err.println("Representation type: DM");
-					labelPredicate = new DMPredicate();
+					labelPredicate = new DMArgumentFilter();
 				}
 				if (representation.equals("pas")) {
 					System.err.println("Representation type: PAS");
-					labelPredicate = new PASPredicate();
+					labelPredicate = new PASArgumentFilter();
 				}
 				if (representation.equals("psd")) {
 					System.err.println("Representation type: PSD");
@@ -665,34 +683,24 @@ public class Scorer {
 		}
 	}
 
-	private interface Predicate {
+	private interface ArgumentFilter {
 
-		abstract public boolean applies(String pos, String label);
+		abstract public boolean applies(String label);
 	}
 
-	private static class TruePredicate implements Predicate {
+	private static class TrueFilter implements ArgumentFilter {
 
 		@Override
-		public boolean applies(String pos, String label) {
+		public boolean applies(String label) {
 			return true;
 		}
 	}
 
-	abstract private static class BasePredicate implements Predicate {
-
-		public boolean isRelevantPartOfSpeech(String pos) {
-			return pos.equals("VB");
-		}
-
-		@Override
-		abstract public boolean applies(String pos, String label);
-	}
-
-	private static class ListPredicate implements Predicate {
+	private static class ListFilter implements ArgumentFilter {
 
 		private final Set<String> labels;
 
-		public ListPredicate(File file) {
+		public ListFilter(File file) {
 			this.labels = new HashSet<>();
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -710,55 +718,55 @@ public class Scorer {
 		}
 
 		@Override
-		public boolean applies(String pos, String label) {
+		public boolean applies(String label) {
 			return labels.contains(label);
 		}
 	}
 
-	private static class DMPredicate extends BasePredicate {
+	private static class DMArgumentFilter implements ArgumentFilter {
 
 		@Override
-		public boolean applies(String pos, String label) {
-			return super.isRelevantPartOfSpeech(pos);
+		public boolean applies(String label) {
+			return true;
 		}
 	}
 
-	private static class PASPredicate extends BasePredicate {
+	private static class PASArgumentFilter implements ArgumentFilter {
 
-		private final Set<String> corePredicates;
+		private final Set<String> coreArguments;
 
-		public PASPredicate() {
-			this.corePredicates = new HashSet<>();
-			corePredicates.add("verb_arg1");
-			corePredicates.add("verb_arg12");
-			corePredicates.add("verb_arg123");
-			corePredicates.add("verb_arg1234");
-			corePredicates.add("verb_mod_arg1");
-			corePredicates.add("verb_mod_arg12");
-			corePredicates.add("verb_mod_arg123");
-			corePredicates.add("verb_mod_arg1234");
-			corePredicates.add("adj_arg1");
-			corePredicates.add("adj_arg12");
-			corePredicates.add("adj_mod_arg1");
-			corePredicates.add("adj_mod_arg12");
-			corePredicates.add("coord_arg12");
-			corePredicates.add("prep_arg12");
-			corePredicates.add("prep_arg123");
-			corePredicates.add("prep_mod_arg12");
-			corePredicates.add("prep_mod_arg123");
+		public PASArgumentFilter() {
+			this.coreArguments = new HashSet<>();
+			coreArguments.add("verb_arg1");
+			coreArguments.add("verb_arg12");
+			coreArguments.add("verb_arg123");
+			coreArguments.add("verb_arg1234");
+			coreArguments.add("verb_mod_arg1");
+			coreArguments.add("verb_mod_arg12");
+			coreArguments.add("verb_mod_arg123");
+			coreArguments.add("verb_mod_arg1234");
+			coreArguments.add("adj_arg1");
+			coreArguments.add("adj_arg12");
+			coreArguments.add("adj_mod_arg1");
+			coreArguments.add("adj_mod_arg12");
+			coreArguments.add("coord_arg12");
+			coreArguments.add("prep_arg12");
+			coreArguments.add("prep_arg123");
+			coreArguments.add("prep_mod_arg12");
+			coreArguments.add("prep_mod_arg123");
 		}
 
 		@Override
-		public boolean applies(String pos, String label) {
-			return super.isRelevantPartOfSpeech(pos) && corePredicates.contains(label);
+		public boolean applies(String label) {
+			return coreArguments.contains(label);
 		}
 	}
 
-	public static class PSDPredicate extends BasePredicate {
+	public static class PSDPredicate implements ArgumentFilter {
 
 		@Override
-		public boolean applies(String pos, String label) {
-			return super.isRelevantPartOfSpeech(pos) && label.endsWith("-arg");
+		public boolean applies(String label) {
+			return label.endsWith("-arg");
 		}
 	}
 
