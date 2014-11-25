@@ -149,8 +149,8 @@ public class Scorer {
 		semanticFramesInGoldStandard.addAll(semanticFramesG);
 		semanticFramesInSystemOutput.addAll(semanticFramesS);
 
-		Set<SemanticFrame> corePredicationsG = getSemanticFrames(goldStandard);
-		Set<SemanticFrame> corePredicationsS = getSemanticFrames(systemOutput);
+		Set<SemanticFrame> corePredicationsG = getCorePredications(goldStandard);
+		Set<SemanticFrame> corePredicationsS = getCorePredications(systemOutput);
 
 		corePredicationsInGoldStandard.addAll(corePredicationsG);
 		corePredicationsInSystemOutput.addAll(corePredicationsS);
