@@ -296,7 +296,7 @@ public class Scorer {
 	 * predicate
 	 */
 	private boolean representsScorablePredicate(Node node) {
-		return node.isPred && node.pos.equals("VB");
+		return node.isPred && node.pos.startsWith("V");
 	}
 
 	/**
