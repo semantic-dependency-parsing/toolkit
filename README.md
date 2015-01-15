@@ -9,7 +9,7 @@ Detailed information about the tasks can be found at the respective websites.
 
 ## Downloading
 
-The project is currently only available via Git.
+The primary form of distribution for the project is via Git. See the [Releases](https://github.com/semantic-dependency-parsing/toolkit/releases) page for precompiled jar files.
 
 ## Building
 
@@ -26,11 +26,15 @@ The entry page for the documentation is `build/docs/javadoc/index.html`.
 
 ## Command-line tools
 
-Some of the tools implemented in the project can be called from the command line. For this there is a convenience shell script called `run.sh`, which you call with the name of the tool and any command-line arguments. The most revelant example is the `Scorer` tool, which is run as follows:
+Some of the tools implemented in the project can be called from the command line. The most revelant example is the `Scorer` tool, which is run as follows:
 
-	$ sh run.sh Scorer gold.sdp system.sdp representation=DM
+	$ java -cp se.liu.ida.nlp.sdp.toolkit.tools.Scorer gold.sdp system.sdp representation=DM
 
 This will evaluate the parser output in the file `system.sdp` based on the gold-standard analyses in the file `gold.sdp` based on the assumption that the data is given in the `DM` representation; other possible representations are `PAS` and `PSD`. The evaluation metrics used are defined on the [Evaluation page](http://alt.qcri.org/semeval2015/task18/index.php?id=evaluation).
+
+The Git repository contains a convenience shell script called `run.sh` that allows you to use an abbreviated form of the above command, assuming that the jar file is in `build/libs/sdp.jar`:
+
+	$ sh run.sh Scorer gold.sdp system.sdp representation=DM
 
 Abbreviations:
 
