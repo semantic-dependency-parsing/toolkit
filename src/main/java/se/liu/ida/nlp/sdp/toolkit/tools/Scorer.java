@@ -591,9 +591,9 @@ public class Scorer {
 		System.err.format("Number of core predications in gold standard: %d%n", scorerL.getNCorePredicationsInGoldStandard());
 		System.err.format("Number of core predications in system output: %d%n", scorerL.getNCorePredicationsInSystemOutput());
 		System.err.println();
-		System.err.format("CPP: %f%n", scorerL.getCorePredicationsPrecision());
-		System.err.format("CPR: %f%n", scorerL.getCorePredicationsRecall());
-		System.err.format("CPF: %f%n", scorerL.getCorePredicationsF1());
+		System.err.format("PP: %f%n", scorerL.getCorePredicationsPrecision());
+		System.err.format("PR: %f%n", scorerL.getCorePredicationsRecall());
+		System.err.format("PF: %f%n", scorerL.getCorePredicationsF1());
 		System.err.println();
 
 		System.err.println("### Semantic frames");
@@ -601,9 +601,9 @@ public class Scorer {
 		System.err.format("Number of semantic frames in gold standard: %d%n", scorerL.getNSemanticFramesInGoldStandard());
 		System.err.format("Number of semantic frames in system output: %d%n", scorerL.getNSemanticFramesInSystemOutput());
 		System.err.println();
-		System.err.format("SFP: %f%n", scorerL.getSemanticFramesPrecision());
-		System.err.format("SFR: %f%n", scorerL.getSemanticFramesRecall());
-		System.err.format("SFF: %f%n", scorerL.getSemanticFramesF1());
+		System.err.format("FP: %f%n", scorerL.getSemanticFramesPrecision());
+		System.err.format("FR: %f%n", scorerL.getSemanticFramesRecall());
+		System.err.format("FF: %f%n", scorerL.getSemanticFramesF1());
 	}
 
 	/**
