@@ -48,10 +48,11 @@ Abbreviations:
 	UF: unlabeled F1
 	UM: unlabeled exact match
 	
-	SFP: precision with respect to semantic frames
-	SFR: recall with respect to semantic frames
-	SFF: F1 with respect to semantic frames
+	PP: precision with respect to complete predications
+	PR: recall with respect to complete predications
+	PF: F1 with respect to complete predications
 	
-	CPP: precision with respect to complete predications
-	CPR: recall with respect to complete predications
-	CPF: F1 with respect to complete predications
+	FP: precision with respect to semantic frames
+	FR: recall with respect to semantic frames
+	FF: F1 with respect to semantic frames
+	
