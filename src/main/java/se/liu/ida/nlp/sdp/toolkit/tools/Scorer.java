@@ -586,10 +586,10 @@ public class Scorer {
 		System.err.format("UM: %f%n", scorerU.getExactMatch());
 		System.err.println();
 
-		System.err.println("### Core predications");
+		System.err.println("### Complete predications");
 		System.err.println();
-		System.err.format("Number of core predications in gold standard: %d%n", scorerL.getNCorePredicationsInGoldStandard());
-		System.err.format("Number of core predications in system output: %d%n", scorerL.getNCorePredicationsInSystemOutput());
+		System.err.format("Number of complete predications in gold standard: %d%n", scorerL.getNCorePredicationsInGoldStandard());
+		System.err.format("Number of complete predications in system output: %d%n", scorerL.getNCorePredicationsInSystemOutput());
 		System.err.println();
 		System.err.format("PP: %f%n", scorerL.getCorePredicationsPrecision());
 		System.err.format("PR: %f%n", scorerL.getCorePredicationsRecall());
