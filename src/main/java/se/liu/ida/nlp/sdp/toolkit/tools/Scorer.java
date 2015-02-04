@@ -737,23 +737,20 @@ public class Scorer {
 
 		public PASArgumentFilter() {
 			this.coreArguments = new HashSet<>();
-			coreArguments.add("verb_arg1");
-			coreArguments.add("verb_arg12");
-			coreArguments.add("verb_arg123");
-			coreArguments.add("verb_arg1234");
-			coreArguments.add("verb_mod_arg1");
-			coreArguments.add("verb_mod_arg12");
-			coreArguments.add("verb_mod_arg123");
-			coreArguments.add("verb_mod_arg1234");
-			coreArguments.add("adj_arg1");
-			coreArguments.add("adj_arg12");
-			coreArguments.add("adj_mod_arg1");
-			coreArguments.add("adj_mod_arg12");
-			coreArguments.add("coord_arg12");
-			coreArguments.add("prep_arg12");
-			coreArguments.add("prep_arg123");
-			coreArguments.add("prep_mod_arg12");
-			coreArguments.add("prep_mod_arg123");
+			coreArguments.add("adj_ARG1");
+			coreArguments.add("adj_ARG2");
+			coreArguments.add("adj_MOD");
+			coreArguments.add("coord_ARG1");
+			coreArguments.add("coord_ARG2");
+			coreArguments.add("prep_ARG1");
+			coreArguments.add("prep_ARG2");
+			coreArguments.add("prep_ARG3");
+			coreArguments.add("prep_MOD");
+			coreArguments.add("verb_ARG1");
+			coreArguments.add("verb_ARG2");
+			coreArguments.add("verb_ARG3");
+			coreArguments.add("verb_ARG4");
+			coreArguments.add("verb_MOD");
 		}
 
 		@Override
