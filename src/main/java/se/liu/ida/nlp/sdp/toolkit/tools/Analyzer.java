@@ -3,6 +3,7 @@
  */
 package se.liu.ida.nlp.sdp.toolkit.tools;
 
+import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.util.HashSet;
 import java.util.Locale;
@@ -154,31 +155,24 @@ public class Analyzer {
      */
     public static void main(String[] args) throws Exception {
         Analyzer analyzer = new Analyzer();
-        for (String arg : args) {
-            GraphReader reader = new GraphReader2015(arg);
-            Graph graph;
-            while ((graph = reader.readGraph()) != null) {
-                analyzer.update(graph);
-            }
-            reader.close();
+        GraphReader reader = new GraphReader2015(new InputStreamReader(System.in));
+        Graph graph;
+        while ((graph = reader.readGraph()) != null) {
+            analyzer.update(graph);
         }
-        System.err.format("number of graphs: %d%n", analyzer.nGraphs);
-        System.err.format("number of non-wall nodes: %d%n", analyzer.nNonWallNodes);
-        System.err.format("number of distinct labels: %d%n", analyzer.labels.size());
-        System.err.format("percentage of singleton nodes (over all non-wall nodes): %s%n", percentage(analyzer.nSingletons, analyzer.nNonWallNodes));
-        System.err.format("edge density (proportion of edge counts to non-singleton nodes): %s%n", fraction(analyzer.nEdges, analyzer.nNonWallNodes - analyzer.nSingletons));
-        System.err.format("percentage of cyclic graphs: %s%n", percentage(analyzer.nCyclic, analyzer.nGraphs));
-        System.err.format("percentage of graphs that are forests: %s%n", percentage(analyzer.nForests, analyzer.nGraphs));
-        System.err.format("percentage of graphs that are trees: %s%n", percentage(analyzer.nTrees, analyzer.nGraphs));
-        System.err.format("percentage of graphs that are fragmented: %s%n", percentage(analyzer.nFragmented, analyzer.nGraphs));
-        System.err.format("percentage of (non-singleton) nodes that are reentrant: %s%n", percentage(analyzer.nReentrantNodes, analyzer.nNonWallNodes - analyzer.nSingletons));
-        System.err.format("percentage of topless graphs: %s%n", percentage(analyzer.nToplessGraphs, analyzer.nGraphs));
-        System.err.format("average number of top nodes per graph: %s%n", fraction(analyzer.nTopNodes, analyzer.nGraphs));
-        System.err.format("percentage of (non-singleton) nodes with indegree = 0 that are not top: %s%n", percentage(analyzer.nSpecialNodes, analyzer.nNonWallNodes - analyzer.nSingletons));
-        System.err.format("percentage of noncrossing graphs: %s%n", percentage(analyzer.nNoncrossingGraphs, analyzer.nGraphs));
-        System.err.format("percentage of projective graphs: %s%n", percentage(analyzer.nProjectiveGraphs, analyzer.nGraphs));
-        System.err.format("number of distinct senses: %d%n", analyzer.senses.size());
-        System.err.format("percentage of (non-singleton) nodes with senses: %s%n", percentage(analyzer.nNodesWithSenses, analyzer.nNonWallNodes - analyzer.nSingletons));
+        reader.close();
+        System.err.format("number of labels:\t%d%n", analyzer.labels.size());
+        System.err.format("percentage of singletons:\t%s%n", percentage(analyzer.nSingletons, analyzer.nNonWallNodes));
+        System.err.format("edge density:\t%s%n", fraction(analyzer.nEdges, analyzer.nNonWallNodes - analyzer.nSingletons, 2));
+        System.err.format("percentage of graphs that are trees:\t%s%n", percentage(analyzer.nTrees, analyzer.nGraphs));
+        System.err.format("percentage of graphs that are projective:\t%s%n", percentage(analyzer.nProjectiveGraphs, analyzer.nGraphs));
+        System.err.format("percentage of graphs that are fragmented:\t%s%n", percentage(analyzer.nFragmented, analyzer.nGraphs));
+        System.err.format("percentage of nodes that have reentrancies:\t%s%n", percentage(analyzer.nReentrantNodes, analyzer.nNonWallNodes - analyzer.nSingletons));
+        System.err.format("percentage of graphs that are topless:\t%s%n", percentage(analyzer.nToplessGraphs, analyzer.nGraphs));
+        System.err.format("number of top nodes per graph:\t%s%n", fraction(analyzer.nTopNodes, analyzer.nGraphs));
+        System.err.format("percentage of nodes that are non-top roots:\t%s%n", percentage(analyzer.nSpecialNodes, analyzer.nNonWallNodes - analyzer.nSingletons));
+        System.err.format("number of senses:\t%d%n", analyzer.senses.size());
+        System.err.format("percentage of nodes that have predicate senses:\t%s%n", percentage(analyzer.nNodesWithSenses, analyzer.nNonWallNodes - analyzer.nSingletons));
     }
 
     private static final NumberFormat NUMBER_FORMAT = NumberFormat.getIntegerInstance(Locale.ENGLISH);
@@ -191,11 +185,15 @@ public class Analyzer {
         PERCENT_FORMAT.setMaximumFractionDigits(2);
     }
 
+    public static String fraction(int a, int b, int digits) {
+        return String.format(String.format("%%.%df", digits), (double) a / (double) b);
+    }
+
     public static String fraction(int a, int b) {
-        return NUMBER_FORMAT.format((double) a / (double) b);
+        return fraction(a, b, 4);
     }
 
     public static String percentage(int enumerator, int denominator) {
-        return PERCENT_FORMAT.format((double) enumerator / (double) denominator);
+        return String.format("%.2f", (double) enumerator / (double) denominator * 100);
     }
 }
