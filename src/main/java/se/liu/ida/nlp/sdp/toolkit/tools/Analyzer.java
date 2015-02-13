@@ -71,7 +71,7 @@ public class Analyzer {
     private final Set<String> senses = new HashSet<String>();
 
     // Number of (non-singleton) nodes with senses.
-    private int nNodesWithSenses;
+    private int nScorablePredicates;
 
     /**
      * Updates the statistics with the specified graph.
@@ -140,9 +140,9 @@ public class Analyzer {
 
         // number of senses
         for (Node node : graph.getNodes()) {
-            if (node.id != 0 && !inspectedGraph.isSingleton(node.id) && node.isPred && !node.sense.equals("_")) {
+            if (node.id != 0 && !inspectedGraph.isSingleton(node.id) && node.isPred && node.pos.startsWith("V") && !node.sense.equals("_")) {
                 senses.add(node.sense);
-                nNodesWithSenses += 1;
+                nScorablePredicates += 1;
             }
         }
     }
@@ -172,17 +172,7 @@ public class Analyzer {
         System.err.format("number of top nodes per graph:\t%s%n", fraction(analyzer.nTopNodes, analyzer.nGraphs));
         System.err.format("percentage of nodes that are non-top roots:\t%s%n", percentage(analyzer.nSpecialNodes, analyzer.nNonWallNodes - analyzer.nSingletons));
         System.err.format("number of senses:\t%d%n", analyzer.senses.size());
-        System.err.format("percentage of nodes that have predicate senses:\t%s%n", percentage(analyzer.nNodesWithSenses, analyzer.nNonWallNodes - analyzer.nSingletons));
-    }
-
-    private static final NumberFormat NUMBER_FORMAT = NumberFormat.getIntegerInstance(Locale.ENGLISH);
-    private static final NumberFormat PERCENT_FORMAT = NumberFormat.getPercentInstance(Locale.ENGLISH);
-
-    static {
-        NUMBER_FORMAT.setMinimumFractionDigits(4);
-        NUMBER_FORMAT.setMaximumFractionDigits(4);
-        PERCENT_FORMAT.setMinimumFractionDigits(2);
-        PERCENT_FORMAT.setMaximumFractionDigits(2);
+        System.err.format("percentage of predicates with senses:\t%s%n", percentage(analyzer.nScorablePredicates, analyzer.nNonWallNodes - analyzer.nSingletons));
     }
 
     public static String fraction(int a, int b, int digits) {
